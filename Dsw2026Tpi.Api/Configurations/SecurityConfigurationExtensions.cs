@@ -1,9 +1,7 @@
 ﻿using Dsw2026Tpi.Data.Identity;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
-using Serilog;
 using System.Text;
-using System.Text.Json;
 
 namespace Dsw2026Tpi.Api.Configurations;
 
@@ -31,6 +29,7 @@ public static class SecurityConfigurationExtensions
                     IssuerSigningKey = new SymmetricSecurityKey(key)
                 };
             });
+        services.AddAuthorization();
         return services;
     }
 
@@ -85,89 +84,5 @@ public static class SecurityConfigurationExtensions
         }).AddEntityFrameworkStores<AuthenticationDbContext>()
           .AddDefaultTokenProviders();
         return services;
-    }
-
-    public static async Task<IHost> LoadUserData(this IHost host)
-    {
-        using var scope = host.Services.CreateScope();
-
-        var services = scope.ServiceProvider;
-
-        try
-        {
-            var userManager = services.GetRequiredService<UserManager<ApplicationUser>>();
-            var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
-
-            string adminRole = "Admin";
-            string userRole = "User";
-
-            // Crear roles si no existen
-            if (!await roleManager.RoleExistsAsync(adminRole))
-            {
-                await roleManager.CreateAsync(new IdentityRole(adminRole));
-                Log.Information($"Rol '{adminRole}' creado.");
-            }
-            if (!await roleManager.RoleExistsAsync(userRole))
-            {
-                await roleManager.CreateAsync(new IdentityRole(userRole));
-                Log.Information($"Rol '{userRole}' creado.");
-            }
-
-            string jsonFilePath = Path.Combine(AppContext.BaseDirectory, "Sources", "users.json");
-            if (!File.Exists(jsonFilePath))
-            {
-                Log.Error($" Archivo 'admins.json' no encontrado en: {jsonFilePath}");
-                return host;
-            }
-
-            string json = await File.ReadAllTextAsync(jsonFilePath);
-            var adminsToSeed = JsonSerializer.Deserialize<List<UserDto>>(json, new JsonSerializerOptions
-            {
-                PropertyNameCaseInsensitive = true,
-            });
-
-            if (adminsToSeed == null) return host;
-            foreach (var adminData in adminsToSeed)
-            {
-                var adminUser = await userManager.FindByNameAsync(adminData.Username);
-                if (adminUser == null)
-                {
-                    adminUser = new IdentityUser
-                    {
-                        UserName = adminData.Username,
-                        Email = adminData.Email,
-                        EmailConfirmed = true
-                    };
-                    var createResult = await userManager.CreateAsync(adminUser, adminData.Password);
-
-                    if (createResult.Succeeded)
-                    {
-                        await userManager.AddToRoleAsync(adminUser, adminRole);
-                        Log.Information($"Admin '{adminData.Username}' creado con rol '{adminRole}'.");
-                    }
-                    else
-                    {
-                        Log.Error($" Error al crear admin '{adminData.Username}':");
-                        foreach (var error in createResult.Errors)
-                        {
-                            Log.Error($"- {error.Description}");
-                        }
-                    }
-                }
-                else
-                {
-                    if (!await userManager.IsInRoleAsync(adminUser, adminRole))
-                    {
-                        await userManager.AddToRoleAsync(adminUser, adminRole);
-                        Log.Information($"Rol '{adminRole}' asignado a usuario existente '{adminUser.UserName}'.");
-                    }
-                }
-            }
-        }
-        catch (Exception ex)
-        {
-            Log.Error(ex, "Error durante la carga de administradores.");
-        }
-        return host;
     }
 }

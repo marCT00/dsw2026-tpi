@@ -7,6 +7,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="EMAIL_CONFIGURATION.md" />
+    <None Remove="IDENTITY_ENDPOINTS.md" />
+    <None Remove="IDENTITY_TESTING.md" />
+    <None Remove="LOGGING.md" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.9" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.9">
       <PrivateAssets>all</PrivateAssets>

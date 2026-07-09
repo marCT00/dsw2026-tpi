@@ -1,5 +1,7 @@
 ﻿using Dsw2026Tpi.Data;
+using Dsw2026Tpi.Data.Extensions;
 using Dsw2026Tpi.Data.Identity;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 namespace Dsw2026Tpi.Api.Configurations;
@@ -21,6 +23,10 @@ public static class PersistenceConfigurationExtensions
         services.AddDbContext<AuthenticationDbContext>(options =>
         {
             options.UseSqlServer(connectionString);
+            options.UseSeeding((c, t) =>
+            {
+                c.Seedwork<IdentityRole>("Sources\\roles.json");
+            });
         });
         return services;
     }

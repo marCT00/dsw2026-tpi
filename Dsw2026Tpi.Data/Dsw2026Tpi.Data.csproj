@@ -19,4 +19,10 @@
     <ProjectReference Include="..\Dsw2026Tpi.Domain\Dsw2026Tpi.Domain.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="Sources\roles.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

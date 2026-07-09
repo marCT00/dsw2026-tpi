@@ -1,0 +1,86 @@
+﻿using Dsw2026Tpi.Application.Dtos;
+using Dsw2026Tpi.Application.Interfaces;
+using Dsw2026Tpi.CrossCutting.Exceptions;
+using Dsw2026Tpi.CrossCutting.Helpers;
+using Dsw2026Tpi.CrossCutting.Identity;
+using Dsw2026Tpi.CrossCutting.Resources;
+using Dsw2026Tpi.Data.Identity;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Logging;
+
+namespace Dsw2026Tpi.Application.Services;
+
+public class AuthenticationService : IAuthenticationService
+{
+    private readonly UserManager<ApplicationUser> _userManager;
+    private readonly SignInManager<ApplicationUser> _signInManager;
+    private readonly RoleManager<IdentityRole> _roleManager;
+    private readonly JwtService _jwtService;
+    private readonly ILogger<AuthenticationService> _logger;
+
+    public AuthenticationService(UserManager<ApplicationUser> userManager,
+        SignInManager<ApplicationUser> signInManager,
+        RoleManager<IdentityRole> roleManager,
+        JwtService jwtService,
+        ILogger<AuthenticationService> logger)
+    {
+        _userManager = userManager;
+        _signInManager = signInManager;
+        _roleManager = roleManager;
+        _jwtService = jwtService;
+        _logger = logger;
+    }
+
+    public async Task<LoginAdminModel.Response> LoginAdmin(LoginAdminModel.Request request)
+    {
+        if (!request.Email.IsEmailValid()) throw new AuthenticationException();
+        var user = await _userManager.FindByEmailAsync(request.Email) ?? throw new AuthenticationException();
+        var result = await _signInManager.CheckPasswordSignInAsync(user, request.Password, lockoutOnFailure: true);
+
+        if (!result.Succeeded)
+        {
+            _logger.LogError("Intento de login fallido para: {Email}", request.Email);
+            throw new AuthenticationException();
+        }
+
+        var role = (await _userManager.GetRolesAsync(user)).FirstOrDefault();
+
+        var token  = _jwtService.GenerateToken(user.UserName!, role);
+
+        return new LoginAdminModel.Response(
+            token,
+            role
+        );
+    }
+
+    public async Task<LoginPatientModel.Response> LoginPatient(LoginPatientModel.Response request)
+    {
+        throw new NotImplementedException();
+    }
+
+    public async Task<RegisterModel.Response> Register(RegisterModel.Request request)
+    {
+        if (!request.Email.IsEmailValid()) throw new ValidationException(ErrorCodes.REGISTER_USER_INVALID,
+            nameof(ErrorCodes.REGISTER_USER_INVALID));
+
+        var user = new ApplicationUser
+        {
+            UserName = request.Email,
+            Email = request.Email,
+            CreatedAt = DateTime.UtcNow,
+            UpdatedAt = DateTime.UtcNow
+        };
+
+        var result = await _userManager.CreateAsync(user, request.Password);
+
+        if (!result.Succeeded) throw new ConflictException(nameof(ErrorCodes.REGISTER_USER_CONFLICT),
+            ErrorCodes.REGISTER_USER_CONFLICT)
+                .WithDetail(result.Errors.Select(e => (e.Code, e.Description)));
+       
+        _ = _userManager.AddToRoleAsync(user, Roles.Administrator);
+
+        _logger.LogInformation("Usuario registrado: {Email}", request.Email);
+
+        return new RegisterModel.Response(request.Email);
+    }
+}

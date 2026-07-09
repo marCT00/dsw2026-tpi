@@ -56,6 +56,45 @@ public class PersistenceEf: IPersistence
         return entity;
     }
 
+    public async Task<Pagination<T>> Paginate<T, TKey>(int pageSize, int pageIndex, Expression<Func<T, bool>> predicate, Expression<Func<T, TKey>> sortOrder, params string[] includes) where T : EntityBase
+    {
+        var filtered = Include(_context.Set<T>(), includes)
+                 .Where(predicate)
+                 .OrderBy(sortOrder);
+
+        var total = await filtered.CountAsync();
+
+        //la pagina existe
+        if (total > pageSize * pageIndex)
+        {
+            var data = await filtered.Skip(pageIndex * pageSize)
+                    .Take(pageSize)
+                    .ToListAsync();
+
+            return new Pagination<T>(pageSize, pageIndex, total, data);
+        }
+
+        //solo hay una pagina
+        if (total < pageSize)
+        {
+            return new Pagination<T>(pageSize, pageIndex, total, await filtered.ToListAsync());
+        }
+
+        var targetPageIndex = pageIndex - 1;
+
+        while (true)
+        {
+            if (total > targetPageIndex * pageSize)
+            {
+                return new Pagination<T>(pageSize, pageIndex, total, await filtered.ToListAsync());
+            }
+
+            targetPageIndex--;
+
+            if (targetPageIndex < 0) return new Pagination<T>(pageSize, 0, 0, []);
+        }
+    }
+
     private static IQueryable<T> Include<T>(IQueryable<T> query, string[] includes) where T : EntityBase
     {
         var includedQuery = query;

@@ -1,6 +1,8 @@
-@Dsw2026Tpi.Api_HostAddress = http://localhost:5278
+@Dsw2026Tpi.Api_HostAddress = https://localhost:7001
+@accessToken = 
 
-GET {{Dsw2026Tpi.Api_HostAddress}}/weatherforecast/
+### Health Check
+GET {{Dsw2026Tpi.Api_HostAddress}}/health-check
 Accept: application/json
 
 ###

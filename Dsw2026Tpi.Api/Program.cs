@@ -8,8 +8,15 @@ public class Program
 {
     public static async Task Main(string[] args)
     {
+        // Inicializar con un logger simple antes de construir el host
+        Log.Logger = new LoggerConfiguration()
+            .WriteTo.Console()
+            .CreateBootstrapLogger();
+
         try
         {
+            Log.Information("Iniciando aplicación Dsw2026Tpi.Api");
+
             var builder = WebApplication.CreateBuilder(args);
 
             //Configuraciones personalizadas
@@ -20,6 +27,7 @@ public class Program
             builder.Services.AddAppCors(builder.Configuration);
             builder.Services.AddAppDependencies();
             builder.Services.AddAppIdentity();
+            builder.Services.AddAuthorization();
             builder.Services.AddControllers();
             builder.Services.AddHealthChecks();
 
@@ -45,9 +53,13 @@ public class Program
             app.MapControllers();
             app.MapHealthChecks("/health-check");
 
-            Log.Information("Iniciando aplicación Dsw2026Tpi.Api");
-            
+            Log.Information("Aplicación iniciada correctamente");
+
             await app.RunAsync();
+        }
+        catch (HostAbortedException)
+        {
+            Log.Information("El host fue abortado (normal durante migraciones de EF Core)");
         }
         catch (Exception ex)
         {
@@ -56,7 +68,8 @@ public class Program
         }
         finally
         {
-            Log.CloseAndFlush();
+            Log.Information("Cerrando aplicación");
+            await Log.CloseAndFlushAsync();
         }
     }
 }

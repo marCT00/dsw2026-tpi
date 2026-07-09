@@ -14,10 +14,4 @@ public static class LoggingConfigurationExtensions
         // Reemplazar el logger por defecto con Serilog
         builder.Host.UseSerilog();
     }
-
-    public static void UseSerilogRequestLogging(this WebApplication app)
-    {
-        // Middleware para logging de requests HTTP
-        app.UseSerilogRequestLogging();
-    }
 }

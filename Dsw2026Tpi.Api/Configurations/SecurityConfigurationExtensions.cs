@@ -1,4 +1,5 @@
-﻿using Dsw2026Tpi.Data.Identity;
+﻿using Dsw2026Tpi.CrossCutting.Identity;
+using Dsw2026Tpi.Data.Identity;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
@@ -29,7 +30,11 @@ public static class SecurityConfigurationExtensions
                     IssuerSigningKey = new SymmetricSecurityKey(key)
                 };
             });
-        services.AddAuthorization();
+        services.AddAuthorizationBuilder()
+            .AddPolicy(Policies.AdminPolicy, policy =>
+                policy.RequireRole(Roles.Administrator))
+            .AddPolicy(Policies.PatientPolicy, policy =>
+                policy.RequireRole(Roles.Patient));
         return services;
     }
 

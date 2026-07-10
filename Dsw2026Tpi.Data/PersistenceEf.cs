@@ -58,20 +58,29 @@ public class PersistenceEf: IPersistence
 
     public async Task<Pagination<T>> Paginate<T, TKey>(int pageSize, int pageIndex, Expression<Func<T, bool>> predicate, Expression<Func<T, TKey>> sortOrder, params string[] includes) where T : EntityBase
     {
+        pageSize = Math.Abs(pageSize);
+        pageIndex = Math.Abs(pageIndex) == 0 ? 0 : Math.Abs(pageIndex) - 1;
+
         var filtered = Include(_context.Set<T>(), includes)
                  .Where(predicate)
                  .OrderBy(sortOrder);
 
         var total = await filtered.CountAsync();
 
-        //la pagina existe
-        if (total > pageSize * pageIndex)
+        
+        async Task<Pagination<T>> GetPage(int skip, int take)
         {
-            var data = await filtered.Skip(pageIndex * pageSize)
-                    .Take(pageSize)
+            var data = await filtered.Skip(skip)
+                    .Take(take)
                     .ToListAsync();
 
             return new Pagination<T>(pageSize, pageIndex, total, data);
+        }
+        
+        //la pagina existe
+        if (total > pageSize * pageIndex)
+        {
+            return await GetPage(pageIndex * pageSize, pageSize);
         }
 
         //solo hay una pagina
@@ -86,7 +95,7 @@ public class PersistenceEf: IPersistence
         {
             if (total > targetPageIndex * pageSize)
             {
-                return new Pagination<T>(pageSize, pageIndex, total, await filtered.ToListAsync());
+                return await GetPage(targetPageIndex * pageSize, pageSize);
             }
 
             targetPageIndex--;

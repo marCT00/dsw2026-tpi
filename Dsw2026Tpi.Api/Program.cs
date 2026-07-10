@@ -1,5 +1,7 @@
 using Dsw2026Tpi.Api.Configurations;
 using Dsw2026Tpi.Api.Middlewares;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Serilog;
 
 namespace Dsw2026Tpi.Api;
@@ -21,13 +23,12 @@ public class Program
 
             //Configuraciones personalizadas
             builder.AddSerilogConfiguration();
+            builder.Services.AddAppIdentity();
+            builder.Services.AddAppAuthentication(builder.Configuration);
             builder.Services.AddSwaggerConfiguration();
             builder.Services.AddApplicationPersistence(builder.Configuration);
-            builder.Services.AddAppAuthentication(builder.Configuration);
             builder.Services.AddAppCors(builder.Configuration);
             builder.Services.AddAppDependencies();
-            builder.Services.AddAppIdentity();
-            builder.Services.AddAuthorization();
             builder.Services.AddControllers();
             builder.Services.AddHealthChecks();
 
@@ -45,10 +46,10 @@ public class Program
                 app.UseSwaggerUI();
             }
 
-            app.UseMiddleware<ExceptionHandlingMiddleware>();
             app.UseAuthentication();
             app.UseAuthorization();
             app.UseCors();
+            app.UseMiddleware<ExceptionHandlingMiddleware>();
 
             app.MapControllers();
             app.MapHealthChecks("/health-check");

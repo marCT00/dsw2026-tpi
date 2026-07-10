@@ -13,13 +13,13 @@ namespace Dsw2026Tpi.Application.Services;
 public class AuthenticationService : IAuthenticationService
 {
     private readonly UserManager<ApplicationUser> _userManager;
-    private readonly SignInManager<ApplicationUser> _signInManager;
+    private readonly ISignInService _signInManager;
     private readonly RoleManager<IdentityRole> _roleManager;
     private readonly JwtService _jwtService;
     private readonly ILogger<AuthenticationService> _logger;
 
     public AuthenticationService(UserManager<ApplicationUser> userManager,
-        SignInManager<ApplicationUser> signInManager,
+        ISignInService signInManager,
         RoleManager<IdentityRole> roleManager,
         JwtService jwtService,
         ILogger<AuthenticationService> logger)
@@ -35,9 +35,9 @@ public class AuthenticationService : IAuthenticationService
     {
         if (!request.Email.IsEmailValid()) throw new AuthenticationException();
         var user = await _userManager.FindByEmailAsync(request.Email) ?? throw new AuthenticationException();
-        var result = await _signInManager.CheckPasswordSignInAsync(user, request.Password, lockoutOnFailure: true);
+        var result = await _signInManager.CheckPassword(user, request.Password);
 
-        if (!result.Succeeded)
+        if (!result)
         {
             _logger.LogError("Intento de login fallido para: {Email}", request.Email);
             throw new AuthenticationException();
@@ -77,7 +77,7 @@ public class AuthenticationService : IAuthenticationService
             ErrorCodes.REGISTER_USER_CONFLICT)
                 .WithDetail(result.Errors.Select(e => (e.Code, e.Description)));
        
-        _ = _userManager.AddToRoleAsync(user, Roles.Administrator);
+        _ = await _userManager.AddToRoleAsync(user, Roles.Administrator);
 
         _logger.LogInformation("Usuario registrado: {Email}", request.Email);
 

@@ -1,5 +1,6 @@
 ﻿using Dsw2026Tpi.CrossCutting.Identity;
 using Dsw2026Tpi.Data.Identity;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
@@ -13,9 +14,17 @@ public static class SecurityConfigurationExtensions
         //Obtener parámetros para creación del JWT desde appsettings.json
         var jwtConfig = configuration.GetSection("Jwt");
         var keyText = jwtConfig["Key"] ?? throw new ArgumentNullException("JWT Key");
+        var issuer = jwtConfig["Issuer"] ?? throw new ArgumentNullException("JWT Issuer");
+        var audience = jwtConfig["Audience"] ?? throw new ArgumentNullException("JWT Audience");
         var key = Encoding.UTF8.GetBytes(keyText);
+
         //Agregar autenticación
-        services.AddAuthentication()
+        services.AddAuthentication(options =>
+        {
+            options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+            options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+        })
             .AddJwtBearer(options =>
             {
                 //Definir parámetros para la generación del token
@@ -25,8 +34,8 @@ public static class SecurityConfigurationExtensions
                     ValidateAudience = true,
                     ValidateLifetime = true,
                     ValidateIssuerSigningKey = true,
-                    ValidIssuer = jwtConfig["Issuer"],
-                    ValidAudience = jwtConfig["Audience"],
+                    ValidIssuer = issuer,
+                    ValidAudience = audience,
                     IssuerSigningKey = new SymmetricSecurityKey(key)
                 };
             });
@@ -76,7 +85,7 @@ public static class SecurityConfigurationExtensions
 
     public static IServiceCollection AddAppIdentity(this IServiceCollection services)
     {
-        services.AddIdentity<ApplicationUser, IdentityRole>(options =>
+        services.AddIdentityCore<ApplicationUser>(options =>
         {
             options.Password = new PasswordOptions
             {
@@ -86,7 +95,9 @@ public static class SecurityConfigurationExtensions
                 RequireDigit = true
             };
 
-        }).AddEntityFrameworkStores<AuthenticationDbContext>()
+        }).AddRoles<IdentityRole>()
+          .AddEntityFrameworkStores<AuthenticationDbContext>()
+          .AddSignInManager()
           .AddDefaultTokenProviders();
         return services;
     }

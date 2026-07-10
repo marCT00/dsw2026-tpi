@@ -18,7 +18,7 @@ public static class SwaggerConfigurationExtensions
             {
                 In = ParameterLocation.Header,
                 Name = "Authorization",
-                Description = "Ingrese el token",
+                Description = "Ingrese el token JWT con el prefijo 'Bearer ' (ej: Bearer eyJhbG...)",
                 Type = SecuritySchemeType.ApiKey
             });
             o.AddSecurityRequirement(doc =>

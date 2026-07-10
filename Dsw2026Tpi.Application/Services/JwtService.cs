@@ -19,25 +19,29 @@ public class JwtService
         if (_config == null) throw new ArgumentNullException();
         var jwtConfig = _config.GetSection("Jwt");
         var keyText = jwtConfig["Key"] ?? throw new ArgumentNullException("Jwt Key");
+        var issuer = jwtConfig["Issuer"] ?? throw new ArgumentNullException("Jwt Issuer");
+        var audience = jwtConfig["Audience"] ?? throw new ArgumentNullException("Jwt Audience");
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(keyText));
         var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-        var expiresIn = int.Parse(jwtConfig["ExpireInMinutes"] ?? "60");
+        var expiresIn = int.Parse(jwtConfig["ExpiresInMinutes"] ?? "60");
 
         var claims = new[]
         {
             new Claim(JwtRegisteredClaimNames.Sub, username),
-            new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+            new Claim(ClaimTypes.Name, username),
             new Claim(ClaimTypes.Role, role ?? string.Empty)
         };
 
         var token = new JwtSecurityToken(
-            issuer: jwtConfig["Issuer"],
-            audience: jwtConfig["Audience"],
+            issuer: issuer,
+            audience: audience,
             claims: claims,
             expires: DateTime.Now.AddMinutes(expiresIn),
             signingCredentials: creds
             );
 
-        return new JwtSecurityTokenHandler().WriteToken(token);
+        var tokenString = new JwtSecurityTokenHandler().WriteToken(token);
+
+        return tokenString;
     }
 }

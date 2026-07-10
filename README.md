@@ -13,3 +13,4 @@ Instrucciones:
 * No eliminar las ramas temporales
 * Tener en cuenta que ya se realizaron las migraciones de Identity, crear nuevas de ser necesario
 * Para más detalles, revisar la grabación de la última clase
+* El endpoint de registración de usuarios administradores está disponible para crear usuarios y poder hacer pruebas, a futuro se eliminará

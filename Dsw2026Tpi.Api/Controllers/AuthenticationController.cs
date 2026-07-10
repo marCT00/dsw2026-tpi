@@ -14,7 +14,7 @@ public class AuthenticationController : AppController
         _authenticationService = authenticationService;
     }
 
-    [HttpPost("register")]
+    [HttpPost("admin/register")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Register([FromBody] RegisterModel.Request request)
@@ -24,6 +24,8 @@ public class AuthenticationController : AppController
     }
 
     [HttpPost("admin/login")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Login([FromBody] LoginAdminModel.Request request)
     {
         var result = await _authenticationService.LoginAdmin(request);

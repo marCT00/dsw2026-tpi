@@ -1,9 +1,11 @@
 ﻿namespace Dsw2026Tpi.Domain.Entities;
 
-public class Speciality: EntityBase
+public class Speciality : EntityBase
 {
     public string Name { get; init; }
     public string Description { get; init; }
+    public bool IsActive { get; private set; }
+    public ICollection<Doctor> Doctors { get; private set; } = new List<Doctor>();
 
     #region Constructor for EF
 #pragma warning disable CS8618
@@ -15,5 +17,6 @@ public class Speciality: EntityBase
     {
         Name = name;
         Description = description;
+        IsActive = true;
     }
 }

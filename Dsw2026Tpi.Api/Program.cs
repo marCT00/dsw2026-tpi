@@ -1,5 +1,6 @@
 using Dsw2026Tpi.Api.Configurations;
 using Dsw2026Tpi.Api.Middlewares;
+using Dsw2026Tpi.Api.Services;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Serilog;
@@ -31,7 +32,7 @@ public class Program
             builder.Services.AddAppDependencies();
             builder.Services.AddControllers();
             builder.Services.AddHealthChecks();
-
+            builder.Services.AddHostedService<AdminSeederHostedService>();
             var app = builder.Build();
 
             app.UseSerilogRequestLogging();
@@ -41,7 +42,7 @@ public class Program
                 app.UseHttpsRedirection();
             }
             if (app.Environment.IsDevelopment())
-            {
+            { 
                 app.UseSwagger();
                 app.UseSwaggerUI();
             }

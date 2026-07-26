@@ -4,7 +4,10 @@ using System.Text;
 
 namespace Dsw2026Tpi.Domain.Entities
 {
-    internal class DateState
+    public enum DateState
     {
+        Confirmed,
+        Cancelled,
+        Completed
     }
 }

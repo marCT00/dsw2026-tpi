@@ -132,6 +132,15 @@
   <data name="REGISTER_USER_INVALID" xml:space="preserve">
     <value>Datos de registración de usuario no válidos</value>
   </data>
+  <data name="SPECIALITY_INVALID_DESCRIPTION" xml:space="preserve">
+    <value> La descripción debe tener entre 10 y 100 caracteres</value>
+  </data>
+  <data name="SPECIALITY_INVALID_NAME" xml:space="preserve">
+    <value>El nombre debe tener entre 3 y 100 caracteres</value>
+  </data>
+  <data name="SPECIALITY_NAME_CONFLICT" xml:space="preserve">
+    <value>Ya existe una especialidad con ese nombre</value>
+  </data>
   <data name="UNHANDLED_ERROR" xml:space="preserve">
     <value>Se produjo un error no controlado</value>
   </data>

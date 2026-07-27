@@ -4,7 +4,10 @@ using System.Text;
 
 namespace Dsw2026Tpi.Domain.Entities
 {
-    internal class TurnState
+    public enum TurnState
     {
+        Available,
+        Reserved,
+        Blocked
     }
 }

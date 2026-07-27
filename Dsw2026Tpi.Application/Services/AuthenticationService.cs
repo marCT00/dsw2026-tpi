@@ -62,11 +62,18 @@ public class AuthenticationService : IAuthenticationService
     {
         if (!request.Email.IsEmailValid()) throw new AuthenticationException();
 
-        var dni = request.Dni.ToString();
+        var dniString = request.Dni.ToString();
+        if (request.Dni <= 0 || dniString.Length < 7 || dniString.Length > 8)
+            throw new ValidationException(ErrorCodes.INVALID_DNI, nameof(ErrorCodes.INVALID_DNI));
+
         var user = await _userManager.FindByEmailAsync(request.Email);
 
         if (user is null)
         {
+            var existingByDni = await _persistence.First<Patient>(p => p.Dni == request.Dni);
+            if (existingByDni is not null)
+                throw new ConflictException(ErrorCodes.REGISTER_USER_CONFLICT, nameof(ErrorCodes.REGISTER_USER_CONFLICT));
+
             user = new ApplicationUser
             {
                 UserName = request.Email,
@@ -82,7 +89,7 @@ public class AuthenticationService : IAuthenticationService
 
             await _userManager.AddToRoleAsync(user, Roles.Patient);
 
-            var patient = new Patient(dni, user.Id);
+            var patient = new Patient(request.Dni, user.Id);
             await _persistence.Add(patient);
 
             _logger.LogInformation("Paciente autoregistrado: {Email}", request.Email);
@@ -90,7 +97,7 @@ public class AuthenticationService : IAuthenticationService
         else
         {
             var existingPatient = await _persistence.First<Patient>(p => p.UserId == user.Id);
-            if (existingPatient is null || existingPatient.Dni != dni)
+            if (existingPatient is null || existingPatient.Dni != request.Dni)
             {
                 _logger.LogError("Intento de login de paciente fallido para: {Email}", request.Email);
                 throw new AuthenticationException();
@@ -102,7 +109,6 @@ public class AuthenticationService : IAuthenticationService
 
         return new LoginPatientModel.Response(token, role);
     }
-
     public async Task<RegisterModel.Response> Register(RegisterModel.Request request)
     {
         if (!request.Email.IsEmailValid()) throw new ValidationException(ErrorCodes.REGISTER_USER_INVALID,

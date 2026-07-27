@@ -8,7 +8,7 @@ public class TurnConfiguration : IEntityTypeConfiguration<Turn>
 {
     public void Configure(EntityTypeBuilder<Turn> builder)
     {
-        builder.ToTable("Turns");
+        builder.ToTable("AvailabilitySlots");
 
         builder.HasKey(t => t.Id);
 

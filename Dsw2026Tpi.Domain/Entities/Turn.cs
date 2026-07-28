@@ -36,18 +36,18 @@ namespace Dsw2026Tpi.Domain.Entities
             StartTime = startTime;
             EndTime = endTime;
             Availability = availability;
-            State = TurnState.Available;
+            State = TurnState.AVAILABLE;
         }
 
         public void Reserve(Date date)
         {
             Date = date;
-            State = TurnState.Reserved;
+            State = TurnState.BOOKED;
         }
 
         public void Block()
         {
-            State = TurnState.Blocked;
+            State = TurnState.BLOCKED;
         }
     }
 }

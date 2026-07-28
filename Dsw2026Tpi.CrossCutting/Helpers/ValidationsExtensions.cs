@@ -1,4 +1,5 @@
-﻿using Dsw2026Tpi.CrossCutting.Resources;
+﻿using Dsw2026Tpi.CrossCutting.Exceptions;
+using Dsw2026Tpi.CrossCutting.Resources;
 using System.Text.RegularExpressions;
 
 namespace Dsw2026Tpi.CrossCutting.Helpers;
@@ -12,13 +13,11 @@ public static class ValidationsExtensions
             Regex.IsMatch(email, EmailPattern);
     }
 
-    private static void ValidateName(SpecialityModel.Request request)
+    public static void ValidateStringLength(string value, int min, int max, string errorCodeKey, string errorMessage) // M: funcion de validación de longitud, de lo que sea
     {
-        if (string.IsNullOrWhiteSpace(request.Name) || request.Name.Length < 3 || request.Name.Length > 100)
-            throw new ValidationException(ErrorCodes.SPECIALITY_INVALID_NAME, nameof(ErrorCodes.SPECIALITY_INVALID_NAME));
-
-        if (string.IsNullOrWhiteSpace(request.Description) || request.Description.Length < 10 || request.Description.Length > 100)
-            throw new ValidationException(ErrorCodes.SPECIALITY_INVALID_DESCRIPTION, nameof(ErrorCodes.SPECIALITY_INVALID_DESCRIPTION));
+        if (string.IsNullOrWhiteSpace(value) || value.Length < min || value.Length > max)
+        {
+            throw new ValidationException(errorCodeKey, errorMessage);
+        }
     }
-
 }

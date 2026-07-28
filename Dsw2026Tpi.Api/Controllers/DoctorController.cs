@@ -27,7 +27,7 @@ public class DoctorController : AppController
 
     [HttpPost] //Desde aqui
     [ProducesResponseType(StatusCodes.Status201Created)]
-    public async Task<IActionResult> Create([FromBody] DoctorModel doctor)
+    public async Task<IActionResult> Create([FromBody] DoctorModel.Request doctor)
     {
         var createdDoctor = await _service.Create(doctor);
         return CreatedAtAction(nameof(GetAll), new { id = createdDoctor.Id }, createdDoctor);
@@ -35,7 +35,7 @@ public class DoctorController : AppController
 
     [HttpPut("{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public async Task<IActionResult> Update([FromRoute] Guid id, [FromBody] DoctorModel doctor)
+    public async Task<IActionResult> Update([FromRoute] Guid id, [FromBody] DoctorModel.Request doctor)
     {
         var updatedDoctor = await _service.Update(id, doctor);
         return Ok(updatedDoctor);

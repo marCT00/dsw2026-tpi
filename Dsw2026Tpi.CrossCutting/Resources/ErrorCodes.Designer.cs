@@ -79,6 +79,33 @@ namespace Dsw2026Tpi.CrossCutting.Resources {
         }
         
         /// <summary>
+        ///   Busca una cadena traducida similar a El numero de licencia no puede ser nulo y debe ser menor a 50 caracteres.
+        /// </summary>
+        public static string DOCTOR_INVALID_LICENSE_NUMBER {
+            get {
+                return ResourceManager.GetString("DOCTOR_INVALID_LICENSE_NUMBER", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Busca una cadena traducida similar a El nombre debe tener entre 3 y 100 caractéres.
+        /// </summary>
+        public static string DOCTOR_INVALID_NAME {
+            get {
+                return ResourceManager.GetString("DOCTOR_INVALID_NAME", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Busca una cadena traducida similar a Ya existe un Doctor con ese Número de Licencia.
+        /// </summary>
+        public static string DOCTOR_LICENSE_NUMBER_CONFLICT {
+            get {
+                return ResourceManager.GetString("DOCTOR_LICENSE_NUMBER_CONFLICT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Busca una cadena traducida similar a La entidad {0} no se encontró.
         /// </summary>
         public static string ENTITY_NOTFOUND {

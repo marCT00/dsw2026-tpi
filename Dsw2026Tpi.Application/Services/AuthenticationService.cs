@@ -62,8 +62,8 @@ public class AuthenticationService : IAuthenticationService
     {
         if (!request.Email.IsEmailValid()) throw new AuthenticationException();
 
-        var dniString = request.Dni.ToString();
-        if (request.Dni <= 0 || dniString.Length < 7 || dniString.Length > 8)
+        ValidationsExtensions.ValidateStringLength(request.Dni, 7, 8, ErrorCodes.INVALID_DNI, nameof(ErrorCodes.INVALID_DNI));
+        if (!request.Dni.All(char.IsDigit))
             throw new ValidationException(ErrorCodes.INVALID_DNI, nameof(ErrorCodes.INVALID_DNI));
 
         var user = await _userManager.FindByEmailAsync(request.Email);

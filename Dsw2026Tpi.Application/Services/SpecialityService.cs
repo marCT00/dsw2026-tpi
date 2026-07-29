@@ -1,6 +1,7 @@
 ﻿using Dsw2026Tpi.Application.Dtos;
 using Dsw2026Tpi.Application.Interfaces;
 using Dsw2026Tpi.CrossCutting.Exceptions;
+using Dsw2026Tpi.CrossCutting.Helpers;
 using Dsw2026Tpi.CrossCutting.Resources;
 using Dsw2026Tpi.Domain.Entities;
 using Dsw2026Tpi.Domain.Interfaces;
@@ -77,11 +78,13 @@ public class SpecialityService : ISpecialityService
 
     private static void Validate(SpecialityModel.Request request)
     {
-        if (string.IsNullOrWhiteSpace(request.Name) || request.Name.Length < 3 || request.Name.Length > 100)
-            throw new ValidationException(ErrorCodes.SPECIALITY_INVALID_NAME, nameof(ErrorCodes.SPECIALITY_INVALID_NAME));
+        ValidationsExtensions.ValidateStringLength(
+            request.Name, 3, 100,
+            ErrorCodes.SPECIALITY_INVALID_NAME, nameof(ErrorCodes.SPECIALITY_INVALID_NAME));
 
-        if (string.IsNullOrWhiteSpace(request.Description) || request.Description.Length < 10 || request.Description.Length > 100)
-            throw new ValidationException(ErrorCodes.SPECIALITY_INVALID_DESCRIPTION, nameof(ErrorCodes.SPECIALITY_INVALID_DESCRIPTION));
+        ValidationsExtensions.ValidateStringLength(
+            request.Description, 10, 100,
+            ErrorCodes.SPECIALITY_INVALID_DESCRIPTION, nameof(ErrorCodes.SPECIALITY_INVALID_DESCRIPTION));
     }
 
     private static SpecialityModel.Response ToResponse(Speciality speciality) =>

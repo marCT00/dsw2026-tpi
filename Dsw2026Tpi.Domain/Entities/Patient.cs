@@ -2,7 +2,7 @@
 
 public class Patient : EntityBase
 {
-    public int Dni { get; init; }
+    public string Dni { get; init; }
     public string UserId { get; init; }
     public string Name { get; private set; }
     public string PhoneNumber { get; private set; }
@@ -15,7 +15,7 @@ public class Patient : EntityBase
 #pragma warning restore CS8618
     #endregion
 
-    public Patient(int dni, string userId, string? name = null, string? phoneNumber = null, Guid? id = null) : base(id)
+    public Patient(string dni, string userId, string? name = null, string? phoneNumber = null, Guid? id = null) : base(id)
     {
         Dni = dni;
         UserId = userId;

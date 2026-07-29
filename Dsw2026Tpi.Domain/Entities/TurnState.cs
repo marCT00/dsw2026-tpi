@@ -6,8 +6,8 @@ namespace Dsw2026Tpi.Domain.Entities
 {
     public enum TurnState
     {
-        Available,
-        Reserved,
-        Blocked
+        AVAILABLE,
+        BOOKED,
+        BLOCKED
     }
 }

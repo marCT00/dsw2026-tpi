@@ -29,18 +29,23 @@ namespace Dsw2026Tpi.Domain.Entities
             AppointmentDate = appointmentDate;
             Patient = patient;
             Turn = turn;
-            Status = DateState.Confirmed;
+            Status = DateState.BOOKED;
         }
 
         public void Cancel(DateTime cancellationDate)
         {
             CancellationDate = cancellationDate;
-            Status = DateState.Cancelled;
+            Status = DateState.CANCELLED;
         }
 
         public void Complete()
         {
-            Status = DateState.Completed;
+            Status = DateState.ATTENDED;
+        }
+
+        public void NoShow()
+        {
+            Status = DateState.NO_SHOW;
         }
     }
 }

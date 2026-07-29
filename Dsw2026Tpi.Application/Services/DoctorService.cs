@@ -35,7 +35,7 @@ public class DoctorService : IDoctorService
         ValidationsExtensions.ValidateStringLength(request.LicenseNumber, 1, 50, ErrorCodes.DOCTOR_INVALID_LICENSE_NUMBER, nameof(ErrorCodes.DOCTOR_INVALID_LICENSE_NUMBER));
 
         var speciality = await _persistence.GetById<Speciality>(request.SpecialityId)
-            ?? throw new Exception("Speciality not found");
+            ?? throw new EntityNotFoundException(nameof(Speciality));
 
         var doctor = new Doctor(request.Name, request.LicenseNumber, speciality);
         await _persistence.Add(doctor);
@@ -56,7 +56,7 @@ public class DoctorService : IDoctorService
         ValidationsExtensions.ValidateStringLength(request.LicenseNumber, 1, 50, ErrorCodes.DOCTOR_INVALID_LICENSE_NUMBER, nameof(ErrorCodes.DOCTOR_INVALID_LICENSE_NUMBER));
 
         var speciality = await _persistence.GetById<Speciality>(request.SpecialityId)
-            ?? throw new Exception("Speciality not found");
+            ?? throw new EntityNotFoundException(nameof(Speciality));
 
         doctor.Update(request.Name, request.LicenseNumber, speciality);
         await _persistence.Update(doctor);

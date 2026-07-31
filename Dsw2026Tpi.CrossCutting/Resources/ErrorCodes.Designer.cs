@@ -8,10 +8,11 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Dsw2026Tpi.CrossCutting.Resources {
+namespace Dsw2026Tpi.CrossCutting.Resources
+{
     using System;
-    
-    
+
+
     /// <summary>
     ///   Clase de recurso fuertemente tipado, para buscar cadenas traducidas, etc.
     /// </summary>
@@ -22,62 +23,107 @@ namespace Dsw2026Tpi.CrossCutting.Resources {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "18.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    public class ErrorCodes {
-        
+    public class ErrorCodes
+    {
+
         private static global::System.Resources.ResourceManager resourceMan;
-        
+
         private static global::System.Globalization.CultureInfo resourceCulture;
-        
+
         [global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        internal ErrorCodes() {
+        internal ErrorCodes()
+        {
         }
-        
+
         /// <summary>
         ///   Devuelve la instancia de ResourceManager almacenada en caché utilizada por esta clase.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        public static global::System.Resources.ResourceManager ResourceManager {
-            get {
-                if (object.ReferenceEquals(resourceMan, null)) {
+        public static global::System.Resources.ResourceManager ResourceManager
+        {
+            get
+            {
+                if (object.ReferenceEquals(resourceMan, null))
+                {
                     global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Dsw2026Tpi.CrossCutting.Resources.ErrorCodes", typeof(ErrorCodes).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
             }
         }
-        
+
         /// <summary>
         ///   Reemplaza la propiedad CurrentUICulture del subproceso actual para todas las
         ///   búsquedas de recursos mediante esta clase de recurso fuertemente tipado.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        public static global::System.Globalization.CultureInfo Culture {
-            get {
+        public static global::System.Globalization.CultureInfo Culture
+        {
+            get
+            {
                 return resourceCulture;
             }
-            set {
+            set
+            {
                 resourceCulture = value;
             }
         }
-        
+
         /// <summary>
         ///   Busca una cadena traducida similar a Usuario o contraseña incorrectos.
         /// </summary>
-        public static string AUTHENTICATION_FAILED {
-            get {
+        public static string AUTHENTICATION_FAILED
+        {
+            get
+            {
                 return ResourceManager.GetString("AUTHENTICATION_FAILED", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Busca una cadena traducida similar a Se requieren permisos para la operación solicitada.
         /// </summary>
-        public static string AUTHORIZATION_FAILED {
-            get {
+        public static string AUTHORIZATION_FAILED
+        {
+            get
+            {
                 return ResourceManager.GetString("AUTHORIZATION_FAILED", resourceCulture);
             }
         }
-        
+
+        /// <summary>
+        ///   Busca una cadena traducida similar a El numero de licencia no puede ser nulo y debe ser menor a 50 caracteres.
+        /// </summary>
+        public static string DOCTOR_INVALID_LICENSE_NUMBER
+        {
+            get
+            {
+                return ResourceManager.GetString("DOCTOR_INVALID_LICENSE_NUMBER", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Busca una cadena traducida similar a El nombre debe tener entre 3 y 100 caractéres.
+        /// </summary>
+        public static string DOCTOR_INVALID_NAME
+        {
+            get
+            {
+                return ResourceManager.GetString("DOCTOR_INVALID_NAME", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Busca una cadena traducida similar a Ya existe un Doctor con ese Número de Licencia.
+        /// </summary>
+        public static string DOCTOR_LICENSE_NUMBER_CONFLICT
+        {
+            get
+            {
+                return ResourceManager.GetString("DOCTOR_LICENSE_NUMBER_CONFLICT", resourceCulture);
+            }
+        }
+
         /// <summary>
         ///   Busca una cadena traducida similar a El numero de licencia no puede ser nulo y debe ser menor a 50 caracteres.
         /// </summary>
@@ -108,80 +154,98 @@ namespace Dsw2026Tpi.CrossCutting.Resources {
         /// <summary>
         ///   Busca una cadena traducida similar a La entidad {0} no se encontró.
         /// </summary>
-        public static string ENTITY_NOTFOUND {
-            get {
+        public static string ENTITY_NOTFOUND
+        {
+            get
+            {
                 return ResourceManager.GetString("ENTITY_NOTFOUND", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Busca una cadena traducida similar a El DNI es invalido.
         /// </summary>
-        public static string INVALID_DNI {
-            get {
+        public static string INVALID_DNI
+        {
+            get
+            {
                 return ResourceManager.GetString("INVALID_DNI", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Busca una cadena traducida similar a Se produjo un error al registrar el usuario.
         /// </summary>
-        public static string REGISTER_USER_CONFLICT {
-            get {
+        public static string REGISTER_USER_CONFLICT
+        {
+            get
+            {
                 return ResourceManager.GetString("REGISTER_USER_CONFLICT", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Busca una cadena traducida similar a Datos de registración de usuario no válidos.
         /// </summary>
-        public static string REGISTER_USER_INVALID {
-            get {
+        public static string REGISTER_USER_INVALID
+        {
+            get
+            {
                 return ResourceManager.GetString("REGISTER_USER_INVALID", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Busca una cadena traducida similar a  La descripción debe tener entre 10 y 100 caracteres.
         /// </summary>
-        public static string SPECIALITY_INVALID_DESCRIPTION {
-            get {
+        public static string SPECIALITY_INVALID_DESCRIPTION
+        {
+            get
+            {
                 return ResourceManager.GetString("SPECIALITY_INVALID_DESCRIPTION", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Busca una cadena traducida similar a El nombre debe tener entre 3 y 100 caracteres.
         /// </summary>
-        public static string SPECIALITY_INVALID_NAME {
-            get {
+        public static string SPECIALITY_INVALID_NAME
+        {
+            get
+            {
                 return ResourceManager.GetString("SPECIALITY_INVALID_NAME", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Busca una cadena traducida similar a Ya existe una especialidad con ese nombre.
         /// </summary>
-        public static string SPECIALITY_NAME_CONFLICT {
-            get {
+        public static string SPECIALITY_NAME_CONFLICT
+        {
+            get
+            {
                 return ResourceManager.GetString("SPECIALITY_NAME_CONFLICT", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Busca una cadena traducida similar a Se produjo un error no controlado.
         /// </summary>
-        public static string UNHANDLED_ERROR {
-            get {
+        public static string UNHANDLED_ERROR
+        {
+            get
+            {
                 return ResourceManager.GetString("UNHANDLED_ERROR", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Busca una cadena traducida similar a Uno o más errores de validación ocurrieron.
         /// </summary>
-        public static string VALIDATION_ERROR {
-            get {
+        public static string VALIDATION_ERROR
+        {
+            get
+            {
                 return ResourceManager.GetString("VALIDATION_ERROR", resourceCulture);
             }
         }

@@ -47,7 +47,7 @@ public class DoctorService : IDoctorService
     public async Task<DoctorModel.Response> Update(Guid id, DoctorModel.Request request)
     {
         var doctor = await _persistence.GetById<Doctor>(id)
-            ?? throw new EntityNotFoundException(nameof(Doctor)); 
+            ?? throw new EntityNotFoundException(nameof(Doctor));
         var duplicate = await _persistence.First<Doctor>(d => d.LicenseNumber == request.LicenseNumber && d.Id != id);
         if (duplicate is not null)
             throw new ConflictException(nameof(ErrorCodes.DOCTOR_LICENSE_NUMBER_CONFLICT), ErrorCodes.DOCTOR_LICENSE_NUMBER_CONFLICT);

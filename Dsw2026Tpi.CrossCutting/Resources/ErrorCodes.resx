@@ -123,6 +123,15 @@
   <data name="AUTHORIZATION_FAILED" xml:space="preserve">
     <value>Se requieren permisos para la operación solicitada</value>
   </data>
+  <data name="DOCTOR_INVALID_LICENSE_NUMBER" xml:space="preserve">
+    <value>El numero de licencia no puede ser nulo y debe ser menor a 50 caracteres</value>
+  </data>
+  <data name="DOCTOR_INVALID_NAME" xml:space="preserve">
+    <value>El nombre debe tener entre 3 y 100 caractéres</value>
+  </data>
+  <data name="DOCTOR_LICENSE_NUMBER_CONFLICT" xml:space="preserve">
+    <value>Ya existe un Doctor con ese Número de Licencia</value>
+  </data>
   <data name="ENTITY_NOTFOUND" xml:space="preserve">
     <value>La entidad {0} no se encontró</value>
   </data>

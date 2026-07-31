@@ -6,8 +6,9 @@ namespace Dsw2026Tpi.Domain.Entities
 {
     public enum DateState
     {
-        Confirmed,
-        Cancelled,
-        Completed
+        BOOKED,
+        CANCELLED,
+        ATTENDED,
+        NO_SHOW
     }
 }

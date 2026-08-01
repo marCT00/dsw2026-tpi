@@ -9,6 +9,7 @@ namespace Dsw2026Tpi.Domain.Entities
         public DateTime AppointmentDate { get; init; }
         public DateTime? CancellationDate { get; private set; }
         public DateState Status { get; private set; }
+        public string Motive { get; init; }
 
         public Guid? PatientId { get; set; }
         public Patient? Patient { get; private set; }
@@ -24,11 +25,12 @@ namespace Dsw2026Tpi.Domain.Entities
 #pragma warning restore CS8618
         #endregion
 
-        public Date(DateTime appointmentDate, Patient patient, Turn turn, Guid? id = null) : base(id)
+        public Date(DateTime appointmentDate, Patient patient, Turn turn, string motive, Guid? id = null) : base(id)
         {
             AppointmentDate = appointmentDate;
             Patient = patient;
             Turn = turn;
+            Motive = motive ?? string.Empty;
             Status = DateState.BOOKED;
         }
 
@@ -49,3 +51,4 @@ namespace Dsw2026Tpi.Domain.Entities
         }
     }
 }
+

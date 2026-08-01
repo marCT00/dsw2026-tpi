@@ -20,6 +20,10 @@ public class DateConfiguration : IEntityTypeConfiguration<Date>
             .HasConversion<string>()
             .HasMaxLength(20);
 
+        builder.Property(d => d.Motive)
+            .IsRequired()
+            .HasMaxLength(500);
+
         builder.HasOne(d => d.Patient)
             .WithMany(p => p.Appointments)
             .HasForeignKey(d => d.PatientId)

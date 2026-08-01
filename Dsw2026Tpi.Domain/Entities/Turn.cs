@@ -10,6 +10,7 @@ namespace Dsw2026Tpi.Domain.Entities
         public TimeSpan StartTime { get; init; }
         public TimeSpan EndTime { get; init; }
         public TurnState State { get; private set; }
+        public byte[] RowVersion { get; set; } = [];
 
         public Guid? AvailabilityId { get; set; }
         public Availability? Availability { get; private set; }
@@ -48,6 +49,12 @@ namespace Dsw2026Tpi.Domain.Entities
         public void Block()
         {
             State = TurnState.BLOCKED;
+        }
+
+        public void Release()
+        {
+            Date = null;
+            State = TurnState.AVAILABLE;
         }
     }
 }

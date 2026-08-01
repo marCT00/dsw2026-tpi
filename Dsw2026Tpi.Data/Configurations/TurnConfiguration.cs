@@ -28,12 +28,15 @@ public class TurnConfiguration : IEntityTypeConfiguration<Turn>
             .HasConversion<string>()
             .HasMaxLength(20);
 
+        builder.Property(t => t.RowVersion)
+            .IsRowVersion();
+
         builder.HasOne(t => t.Availability)
             .WithMany(a => a.Turns)
             .HasForeignKey(t => t.AvailabilityId)
             .OnDelete(DeleteBehavior.Restrict);
 
-      
+
         builder.Ignore(t => t.DateId);
     }
 }

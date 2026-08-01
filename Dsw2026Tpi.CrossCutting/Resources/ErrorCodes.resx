@@ -159,4 +159,40 @@
   <data name="VALIDATION_ERROR" xml:space="preserve">
     <value>Uno o más errores de validación ocurrieron</value>
   </data>
+  <data name="AVAILABILITY_INVALID_RANGE" xml:space="preserve">
+    <value>La hora de inicio debe ser menor a la hora de fin</value>
+  </data>
+  <data name="AVAILABILITY_INVALID_DURATION" xml:space="preserve">
+    <value>El rango horario debe ser múltiplo de 30 minutos y estar alineado a la grilla (:00 o :30)</value>
+  </data>
+  <data name="AVAILABILITY_INVALID_MONTH" xml:space="preserve">
+    <value>El mes debe estar entre 1 y 12</value>
+  </data>
+  <data name="AVAILABILITY_INVALID_YEAR" xml:space="preserve">
+    <value>El año no es válido</value>
+  </data>
+  <data name="AVAILABILITY_OVERLAP" xml:space="preserve">
+    <value>Los rangos horarios se solapan para el mismo médico y día de la semana</value>
+  </data>
+  <data name="AVAILABILITY_MONTH_HAS_BOOKINGS" xml:space="preserve">
+    <value>No se puede modificar el mes porque tiene turnos reservados o bloqueados</value>
+  </data>
+  <data name="APPOINTMENT_INVALID_MOTIVE" xml:space="preserve">
+    <value>El motivo debe tener entre 3 y 500 caracteres</value>
+  </data>
+  <data name="APPOINTMENT_SLOT_UNAVAILABLE" xml:space="preserve">
+    <value>El turno seleccionado no está disponible</value>
+  </data>
+  <data name="APPOINTMENT_PATIENT_NOT_FOUND" xml:space="preserve">
+    <value>No se encontró un paciente con ese DNI</value>
+  </data>
+  <data name="APPOINTMENT_PAST_DATE" xml:space="preserve">
+    <value>No se puede reservar un turno en una fecha pasada</value>
+  </data>
+  <data name="APPOINTMENT_CONCURRENCY" xml:space="preserve">
+    <value>El turno fue reservado por otro usuario. Por favor, seleccione otro turno</value>
+  </data>
+  <data name="APPOINTMENT_ALREADY_CANCELLED" xml:space="preserve">
+    <value>El turno ya fue cancelado o atendido</value>
+  </data>
 </root>

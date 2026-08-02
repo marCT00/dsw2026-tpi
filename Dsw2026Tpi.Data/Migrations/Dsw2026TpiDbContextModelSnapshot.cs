@@ -76,6 +76,11 @@ namespace Dsw2026Tpi.Data.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("Motive")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
                     b.Property<Guid?>("PatientId")
                         .HasColumnType("uniqueidentifier");
 
@@ -230,6 +235,12 @@ namespace Dsw2026Tpi.Data.Migrations
 
                     b.Property<TimeSpan>("EndTime")
                         .HasColumnType("time");
+
+                    b.Property<byte[]>("RowVersion")
+                        .IsConcurrencyToken()
+                        .IsRequired()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("rowversion");
 
                     b.Property<DateTime>("ScheduledDate")
                         .HasColumnType("datetime2");

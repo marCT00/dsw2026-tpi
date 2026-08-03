@@ -30,6 +30,7 @@ public class Program
             builder.Services.AddApplicationPersistence(builder.Configuration);
             builder.Services.AddAppCors(builder.Configuration);
             builder.Services.AddAppDependencies();
+            builder.Services.AddAppRateLimiting(builder.Configuration);
             builder.Services.AddControllers();
             builder.Services.AddHealthChecks();
             builder.Services.AddHostedService<AdminSeederHostedService>();
@@ -49,6 +50,7 @@ public class Program
 
             app.UseAuthentication();
             app.UseAuthorization();
+            app.UseRateLimiter();
             app.UseCors();
             app.UseMiddleware<ExceptionHandlingMiddleware>();
 

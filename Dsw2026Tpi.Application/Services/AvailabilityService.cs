@@ -1,10 +1,13 @@
 using Dsw2026Tpi.Application.Dtos;
 using Dsw2026Tpi.Application.Interfaces;
 using Dsw2026Tpi.CrossCutting.Exceptions;
+using Dsw2026Tpi.CrossCutting.Helpers;
 using Dsw2026Tpi.CrossCutting.Resources;
 using Dsw2026Tpi.Domain.Entities;
 using Dsw2026Tpi.Domain.Interfaces;
 using Microsoft.Extensions.Logging;
+using System.Text.Json;
+using System.IO;
 
 namespace Dsw2026Tpi.Application.Services;
 
@@ -12,7 +15,6 @@ public class AvailabilityService : IAvailabilityService
 {
     private readonly IPersistence _persistence;
     private readonly ILogger<AvailabilityService> _logger;
-
     private const int SlotDurationMinutes = 30;
 
     public AvailabilityService(IPersistence persistence, ILogger<AvailabilityService> logger)
@@ -26,10 +28,16 @@ public class AvailabilityService : IAvailabilityService
         var doctor = await _persistence.GetById<Doctor>(request.DoctorId)
             ?? throw new EntityNotFoundException(nameof(Doctor));
 
-        ValidateMonthYear(request.Month, request.Year);
+        ValidationsExtensions.ValidateMonthYear(request.Month, request.Year);
         var days = request.Days.ToList();
-        ValidateDayRules(days);
-        ValidateInternalOverlap(days);
+
+        var dayRulesBasic = days.Select(d => (d.StartTime, d.EndTime));
+        ValidationsExtensions.ValidateDayRules(dayRulesBasic, SlotDurationMinutes);
+
+        var dayRulesForOverlap = days.Select(d => (d.DayOfWeek, d.StartTime, d.EndTime));
+        ValidationsExtensions.ValidateInternalOverlap(dayRulesForOverlap);
+
+
         await ValidateDbOverlap(request.DoctorId, request.Year, request.Month, days, null);
 
         var created = new List<AvailabilityModel.Response>();
@@ -58,12 +66,16 @@ public class AvailabilityService : IAvailabilityService
         var doctor = await _persistence.GetById<Doctor>(request.DoctorId)
             ?? throw new EntityNotFoundException(nameof(Doctor));
 
-        ValidateMonthYear(request.Month, request.Year);
+        ValidationsExtensions.ValidateMonthYear(request.Month, request.Year);
         var days = request.Days.ToList();
-        ValidateDayRules(days);
-        ValidateInternalOverlap(days);
 
-        var existingTurns = await _persistence.GetFiltered<Turn>(
+        var dayRulesBasic = days.Select(d => (d.StartTime, d.EndTime));
+        ValidationsExtensions.ValidateDayRules(dayRulesBasic, SlotDurationMinutes);
+
+        var dayRulesForOverlap = days.Select(d => (d.DayOfWeek, d.StartTime, d.EndTime));
+        ValidationsExtensions.ValidateInternalOverlap(dayRulesForOverlap);
+
+      /*  var existingTurns = await _persistence.GetFiltered<Turn>(
             t => t.Availability != null
                 && t.Availability.DoctorId == request.DoctorId
                 && t.Availability.Year == request.Year
@@ -73,7 +85,7 @@ public class AvailabilityService : IAvailabilityService
         if (existingTurns is not null && existingTurns.Any())
             throw new ConflictException(
                 nameof(ErrorCodes.AVAILABILITY_MONTH_HAS_BOOKINGS),
-                ErrorCodes.AVAILABILITY_MONTH_HAS_BOOKINGS);
+                ErrorCodes.AVAILABILITY_MONTH_HAS_BOOKINGS); */
 
         var existingAvailabilities = await _persistence.GetFiltered<Availability>(
             a => a.DoctorId == request.DoctorId
@@ -119,21 +131,24 @@ public class AvailabilityService : IAvailabilityService
         return created;
     }
 
-    public async Task<IEnumerable<AvailabilityModel.SlotResponse>> GetSlotsByDoctor(
-        Guid doctorId, int? year = null, int? month = null)
+    public async Task<IEnumerable<AvailabilityModel.DoctorAvailabilityResponse>> GetSlotsByDoctor(Guid doctorId, int? year = null, int? month = null)
     {
         var doctor = await _persistence.GetById<Doctor>(doctorId)
             ?? throw new EntityNotFoundException(nameof(Doctor));
 
-        var turns = await _persistence.GetFiltered<Turn>(
-            t => t.Availability != null
-                && t.Availability.DoctorId == doctorId
-                && (!year.HasValue || t.Availability.Year == year.Value)
-                && (!month.HasValue || t.Availability.Month == month.Value));
+        var availabilities = await _persistence.GetFiltered<Availability>(
+        a => a.DoctorId == doctorId
+            && (!year.HasValue || a.Year == year.Value)
+            && (!month.HasValue || a.Month == month.Value));
 
-        return (turns ?? Enumerable.Empty<Turn>())
-            .Select(t => new AvailabilityModel.SlotResponse(
-                t.Id, t.ScheduledDate, t.StartTime, t.EndTime, t.State, t.AvailabilityId ?? Guid.Empty));
+        if (availabilities is null || !availabilities.Any())
+            return Enumerable.Empty<AvailabilityModel.DoctorAvailabilityResponse>();
+        return availabilities.Select(a => new AvailabilityModel.DoctorAvailabilityResponse(
+            a.Id,
+            a.DayOfWeek.ToString().ToUpper(),
+            a.StartTime.ToString(@"hh\:mm"), 
+            a.EndTime.ToString(@"hh\:mm")
+           ));
     }
 
     private async Task GenerateSlots(Availability availability, int year, int month)
@@ -141,10 +156,32 @@ public class AvailabilityService : IAvailabilityService
         var today = DateTime.UtcNow.Date;
         var daysInMonth = DateTime.DaysInMonth(year, month);
 
+        //feriados
+        var basePath = AppDomain.CurrentDomain.BaseDirectory;
+        var jsonPath = Path.Combine(basePath, "Sources", "holidays.json");
+        var holidays = new List<string>();
+
+        if (File.Exists(jsonPath))
+        {
+            var jsonContent = await File.ReadAllTextAsync(jsonPath);
+            using JsonDocument doc = JsonDocument.Parse(jsonContent);
+
+            if (doc.RootElement.TryGetProperty("feriados", out var feriadosElement))
+            {
+                holidays = feriadosElement.Deserialize<List<string>>() ?? new List<string>();
+            }
+        } else {
+            throw new FileNotFoundException($"El archivo de feriados no se encontró en la ruta: {jsonPath}");
+        }
+
         for (int day = 1; day <= daysInMonth; day++)
         {
             var date = new DateTime(year, month, day);
-            if (date.DayOfWeek != availability.DayOfWeek || date < today)
+            var dateString = date.ToString("yyyy-MM-dd");
+            bool isHoliday = holidays.Contains(dateString);
+
+
+            if (date.DayOfWeek != availability.DayOfWeek || date < today || isHoliday)
                 continue;
 
             var current = availability.StartTime;
@@ -158,87 +195,25 @@ public class AvailabilityService : IAvailabilityService
         }
     }
 
-    private static void ValidateMonthYear(int month, int year)
-    {
-        if (month < 1 || month > 12)
-            throw new ValidationException(
-                ErrorCodes.AVAILABILITY_INVALID_MONTH,
-                nameof(ErrorCodes.AVAILABILITY_INVALID_MONTH));
-
-        if (year < DateTime.UtcNow.Year)
-            throw new ValidationException(
-                ErrorCodes.AVAILABILITY_INVALID_YEAR,
-                nameof(ErrorCodes.AVAILABILITY_INVALID_YEAR));
-    }
-
-    private static void ValidateDayRules(List<AvailabilityModel.DayRuleRequest> days)
-    {
-        if (days.Count == 0)
-            throw new ValidationException(
-                ErrorCodes.VALIDATION_ERROR,
-                "Se debe proporcionar al menos una regla de día");
-
-        foreach (var day in days)
-        {
-            if (day.StartTime >= day.EndTime)
-                throw new ValidationException(
-                    ErrorCodes.AVAILABILITY_INVALID_RANGE,
-                    nameof(ErrorCodes.AVAILABILITY_INVALID_RANGE));
-
-            if (!IsAlignedToGrid(day.StartTime) || !IsAlignedToGrid(day.EndTime))
-                throw new ValidationException(
-                    ErrorCodes.AVAILABILITY_INVALID_DURATION,
-                    nameof(ErrorCodes.AVAILABILITY_INVALID_DURATION));
-        }
-    }
-
-    private static bool IsAlignedToGrid(TimeSpan time) =>
-        time.Minutes % SlotDurationMinutes == 0 && time.Seconds == 0;
-
-    private static void ValidateInternalOverlap(List<AvailabilityModel.DayRuleRequest> days)
-    {
-        var grouped = days.GroupBy(d => d.DayOfWeek);
-        foreach (var group in grouped)
-        {
-            var sorted = group.OrderBy(d => d.StartTime).ToList();
-            for (int i = 0; i < sorted.Count - 1; i++)
-            {
-                if (sorted[i].StartTime < sorted[i + 1].EndTime &&
-                    sorted[i + 1].StartTime < sorted[i].EndTime)
-                {
-                    throw new ConflictException(
-                        nameof(ErrorCodes.AVAILABILITY_OVERLAP),
-                        ErrorCodes.AVAILABILITY_OVERLAP);
-                }
-            }
-        }
-    }
-
-    private async Task ValidateDbOverlap(
-        Guid doctorId, int year, int month,
-        List<AvailabilityModel.DayRuleRequest> newDays,
-        Guid? excludeAvailabilityId)
+    private async Task ValidateDbOverlap(Guid doctorId, int year, int month,List<AvailabilityModel.DayRuleRequest> newDays,Guid? excludeAvailabilityId)
     {
         var existingRules = await _persistence.GetFiltered<Availability>(
-            a => a.DoctorId == doctorId
-                && a.Year == year
-                && a.Month == month
-                && (!excludeAvailabilityId.HasValue || a.Id != excludeAvailabilityId.Value));
+            a => a.DoctorId == doctorId 
+            && a.Year == year && a.Month == month 
+            && (!excludeAvailabilityId.HasValue || a.Id != excludeAvailabilityId.Value));
 
-        if (existingRules is null)
-            return;
-
+        if (existingRules is null) return;
         foreach (var newDay in newDays)
-        {
+        { 
             var overlapping = existingRules
-                .Where(e => e.DayOfWeek == newDay.DayOfWeek
-                    && e.StartTime < newDay.EndTime
-                    && newDay.StartTime < e.EndTime);
+                .Where(e => e.DayOfWeek == newDay.DayOfWeek 
+                && e.StartTime < newDay.EndTime
+                && newDay.StartTime < e.EndTime);
 
             if (overlapping.Any())
-                throw new ConflictException(
-                    nameof(ErrorCodes.AVAILABILITY_OVERLAP),
-                    ErrorCodes.AVAILABILITY_OVERLAP);
+                throw new ConflictException(nameof(ErrorCodes.AVAILABILITY_OVERLAP),ErrorCodes.AVAILABILITY_OVERLAP);
+
         }
+
     }
 }

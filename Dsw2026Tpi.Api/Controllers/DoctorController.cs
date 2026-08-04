@@ -51,9 +51,10 @@ public class DoctorController : AppController
 
     [HttpGet("{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public async Task<IActionResult> GetDcotorById([FromQuery] int pageSize, [FromQuery] int pageIndex, [FromQuery] string? name = null)
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> GetById([FromRoute] Guid id)
     {
-        var doctors = await _service.GetAll(pageSize, pageIndex, name);
-        return Ok(doctors);
+        var doctor = await _service.GetById(id);
+        return Ok(doctor);
     }
 }

@@ -8,7 +8,7 @@ namespace Dsw2026Tpi.Api.Controllers;
 
 [ApiController]
 [Route("api/specialties")]
-[Authorize(Policy = Policies.AdminPolicy)]
+[Authorize]
 public class SpecialtiesController : ControllerBase
 {
     private readonly ISpecialityService _specialityService;
@@ -33,6 +33,7 @@ public class SpecialtiesController : ControllerBase
     }
 
     [HttpPost]
+    [Authorize(Policy = Policies.AdminPolicy)]
     public async Task<IActionResult> Create([FromBody] SpecialityModel.Request request)
     {
         var result = await _specialityService.Create(request);
@@ -40,6 +41,7 @@ public class SpecialtiesController : ControllerBase
     }
 
     [HttpPut("{id}")]
+    [Authorize(Policy = Policies.AdminPolicy)]
     public async Task<IActionResult> Update(Guid id, [FromBody] SpecialityModel.Request request)
     {
         var result = await _specialityService.Update(id, request);
@@ -47,9 +49,10 @@ public class SpecialtiesController : ControllerBase
     }
 
     [HttpDelete("{id}")]
+    [Authorize(Policy = Policies.AdminPolicy)]
     public async Task<IActionResult> Delete(Guid id)
     {
         await _specialityService.Delete(id);
-        return NoContent();
+        return Ok("ok");
     }
 }

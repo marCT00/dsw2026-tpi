@@ -37,6 +37,7 @@ public class Program
             var app = builder.Build();
 
             app.UseSerilogRequestLogging();
+            app.UseMiddleware<ExceptionHandlingMiddleware>();
 
             if (app.Environment.IsProduction())
             {
@@ -52,7 +53,6 @@ public class Program
             app.UseAuthorization();
             app.UseRateLimiter();
             app.UseCors();
-            app.UseMiddleware<ExceptionHandlingMiddleware>();
 
             app.MapControllers();
             app.MapHealthChecks("/health-check");

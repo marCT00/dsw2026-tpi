@@ -4,6 +4,7 @@ using Dsw2026Tpi.CrossCutting.Identity;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
+using System.Security.Claims;
 
 namespace Dsw2026Tpi.Api.Controllers;
 
@@ -33,15 +34,18 @@ public class AppointmentController : ControllerBase
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> GetByPatient([FromQuery] string dni)
     {
-        var result = await _appointmentService.GetByPatient(dni);
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        var isAdmin = User.IsInRole(Roles.Administrator);
+        var result = await _appointmentService.GetByPatient(dni, userId, isAdmin);
         return Ok(result);
     }
 
     [HttpGet("search")]
+    [Authorize(Policy = Policies.AdminPolicy)]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public async Task<IActionResult> Search([FromQuery] string patientDni, [FromQuery] Guid? doctorId)
+    public async Task<IActionResult> Search([FromQuery] int pageSize = 10, [FromQuery] int pageIndex = 1,[FromQuery] string? patientDni = null, [FromQuery] Guid? doctorId = null,[FromQuery] Guid? specialtyId = null,[FromQuery] DateTime? date = null)
     {
-        var result = await _appointmentService.Search(patientDni, doctorId);
+        var result = await _appointmentService.Search(pageSize, pageIndex, patientDni, doctorId, specialtyId, date);
         return Ok(result);
     }
 
@@ -51,6 +55,14 @@ public class AppointmentController : ControllerBase
     public async Task<IActionResult> Cancel([FromRoute] Guid id)
     {
         await _appointmentService.Cancel(id);
-        return Ok();
+        return Ok("ok");
+    }
+
+    [HttpGet]
+    [Authorize(Policy = Policies.AdminPolicy)]
+    public async Task<IActionResult> GetByDate([FromQuery] DateTime date)
+    {
+        var result = await _appointmentService.Search(pageSize: 100, pageIndex: 1, patientDni: null, doctorId: null, specialtyId: null, date: date);
+        return Ok(result);
     }
 }

@@ -50,20 +50,16 @@ public class AuthenticationService : IAuthenticationService
 
         var role = (await _userManager.GetRolesAsync(user)).FirstOrDefault();
 
-        var token = _jwtService.GenerateToken(user.UserName!, role);
+        var token = _jwtService.GenerateToken(user.Id,user.UserName!, role);
 
-        return new LoginAdminModel.Response(
-            token,
-            role
-        );
+        return new LoginAdminModel.Response(token, role?.ToUpperInvariant());
     }
 
     public async Task<LoginPatientModel.Response> LoginPatient(LoginPatientModel.Request request)
     {
         if (!request.Email.IsEmailValid()) throw new AuthenticationException();
 
-        ValidationsExtensions.ValidateStringLength(request.Dni, 7, 8, ErrorCodes.INVALID_DNI, nameof(ErrorCodes.INVALID_DNI));
-        if (!request.Dni.All(char.IsDigit))
+        if (!request.Dni.IsDniValid())
             throw new ValidationException(ErrorCodes.INVALID_DNI, nameof(ErrorCodes.INVALID_DNI));
 
         var user = await _userManager.FindByEmailAsync(request.Email);
@@ -72,7 +68,7 @@ public class AuthenticationService : IAuthenticationService
         {
             var existingByDni = await _persistence.First<Patient>(p => p.Dni == request.Dni);
             if (existingByDni is not null)
-                throw new ConflictException(ErrorCodes.REGISTER_USER_CONFLICT, nameof(ErrorCodes.REGISTER_USER_CONFLICT));
+                throw new ConflictException(nameof(ErrorCodes.REGISTER_USER_CONFLICT), ErrorCodes.REGISTER_USER_CONFLICT);
 
             user = new ApplicationUser
             {
@@ -105,9 +101,9 @@ public class AuthenticationService : IAuthenticationService
         }
 
         var role = (await _userManager.GetRolesAsync(user)).FirstOrDefault();
-        var token = _jwtService.GenerateToken(user.UserName!, role);
+        var token = _jwtService.GenerateToken(user.Id,user.UserName!, role);
 
-        return new LoginPatientModel.Response(token, role);
+        return new LoginPatientModel.Response(token, role?.ToUpperInvariant());
     }
     public async Task<RegisterModel.Response> Register(RegisterModel.Request request)
     {

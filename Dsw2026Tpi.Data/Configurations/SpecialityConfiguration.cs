@@ -23,9 +23,9 @@ public class SpecialityConfiguration : IEntityTypeConfiguration<Speciality>
             .IsRequired()
             .HasMaxLength(100);
 
-        builder.Property(s => s.IsActive)
-            .HasDefaultValue(true);
+        builder.Property(s => s.Deleted)
+            .HasDefaultValue(false);
 
-        builder.HasQueryFilter(s => s.IsActive);
+        builder.HasQueryFilter(s => !s.Deleted);
     }
 }

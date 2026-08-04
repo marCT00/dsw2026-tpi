@@ -22,7 +22,7 @@ public class SpecialityService : ISpecialityService
         var specialities = await _persistence.Paginate<Speciality, string>(
             pageSize,
             pageIndex,
-            s => s.IsActive && (string.IsNullOrWhiteSpace(name) || s.Name.Contains(name)),
+            s => !s.Deleted && (string.IsNullOrWhiteSpace(name) || s.Name.Contains(name)),
             s => s.Name);
 
         return specialities.Map(ToResponse);
@@ -40,7 +40,7 @@ public class SpecialityService : ISpecialityService
     {
         Validate(request);
 
-        var exists = await _persistence.First<Speciality>(s => s.Name == request.Name && s.IsActive);
+        var exists = await _persistence.First<Speciality>(s => s.Name == request.Name && !s.Deleted);
         if (exists is not null)
             throw new ConflictException(nameof(ErrorCodes.SPECIALITY_NAME_CONFLICT), ErrorCodes.SPECIALITY_NAME_CONFLICT);
 
@@ -57,7 +57,7 @@ public class SpecialityService : ISpecialityService
         var speciality = await _persistence.GetById<Speciality>(id)
             ?? throw new EntityNotFoundException(nameof(Speciality));
 
-        var duplicate = await _persistence.First<Speciality>(s => s.Name == request.Name && s.IsActive && s.Id != id);
+        var duplicate = await _persistence.First<Speciality>(s => s.Name == request.Name && !s.Deleted && s.Id != id);
         if (duplicate is not null)
             throw new ConflictException(nameof(ErrorCodes.SPECIALITY_NAME_CONFLICT), ErrorCodes.SPECIALITY_NAME_CONFLICT);
 
@@ -88,5 +88,5 @@ public class SpecialityService : ISpecialityService
     }
 
     private static SpecialityModel.Response ToResponse(Speciality speciality) =>
-        new(speciality.Id, speciality.Name, speciality.Description, speciality.IsActive);
+        new(speciality.Id, speciality.Name, speciality.Description, !speciality.Deleted);
 }

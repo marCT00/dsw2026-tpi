@@ -21,33 +21,28 @@ public class AppointmentService : IAppointmentService
         _logger = logger;
     }
 
-    public async Task<AppointmentModel.Response> Create(AppointmentModel.Request request) //modificar validaciones
+    public async Task<AppointmentModel.Response> Create(AppointmentModel.Request request)
     {
-        if (string.IsNullOrWhiteSpace(request.Motive) || request.Motive.Length < 3 || request.Motive.Length > 500)
-            throw new ValidationException(
-                ErrorCodes.APPOINTMENT_INVALID_MOTIVE,
-                nameof(ErrorCodes.APPOINTMENT_INVALID_MOTIVE));
+        ValidationsExtensions.ValidateStringLength(request.Motive, 3, 500, ErrorCodes.APPOINTMENT_INVALID_MOTIVE, nameof(ErrorCodes.APPOINTMENT_INVALID_MOTIVE));
+        ValidationsExtensions.IsDniValid(request.Patient.Dni);
 
-        if (request.Dni.Length < 7 || request.Dni.Length > 10 || !request.Dni.All(char.IsDigit))
-            throw new ValidationException(
-                ErrorCodes.APPOINTMENT_PATIENT_NOT_FOUND,
-                nameof(ErrorCodes.APPOINTMENT_PATIENT_NOT_FOUND));
+        var doctor = await _persistence.GetById<Doctor>(request.DoctorId)
+        ?? throw new EntityNotFoundException(nameof(Doctor));
 
-        var patient = await _persistence.First<Patient>(p => p.Dni == request.Dni)
+        var patient = await _persistence.First<Patient>(p => p.Dni == request.Patient.Dni)
             ?? throw new EntityNotFoundException(nameof(Patient));
 
-        var turn = await _persistence.GetById<Turn>(request.TurnId)
+        var turn = await _persistence.GetById<Turn>(request.AvailabilitySlotId, nameof(Turn.Availability))
             ?? throw new EntityNotFoundException(nameof(Turn));
 
+        if (turn.Availability?.DoctorId != request.DoctorId)
+            throw new ValidationException(ErrorCodes.APPOINTMENT_SLOT_UNAVAILABLE, nameof(ErrorCodes.APPOINTMENT_SLOT_UNAVAILABLE));
+
         if (turn.ScheduledDate.Date < DateTime.UtcNow.Date)
-            throw new ValidationException(
-                ErrorCodes.APPOINTMENT_PAST_DATE,
-                nameof(ErrorCodes.APPOINTMENT_PAST_DATE));
+            throw new ValidationException(ErrorCodes.APPOINTMENT_PAST_DATE, nameof(ErrorCodes.APPOINTMENT_PAST_DATE));
 
         if (turn.State != TurnState.AVAILABLE)
-            throw new ConflictException(
-                nameof(ErrorCodes.APPOINTMENT_SLOT_UNAVAILABLE),
-                ErrorCodes.APPOINTMENT_SLOT_UNAVAILABLE);
+            throw new ConflictException(nameof(ErrorCodes.APPOINTMENT_SLOT_UNAVAILABLE), ErrorCodes.APPOINTMENT_SLOT_UNAVAILABLE);
 
         var appointment = new Date(turn.ScheduledDate, patient, turn, request.Motive);
 
@@ -60,7 +55,7 @@ public class AppointmentService : IAppointmentService
         {
             _logger.LogWarning(
                 "Conflicto de concurrencia al reservar turno {TurnId} para paciente {Dni}",
-                request.TurnId, request.Dni);
+                request.AvailabilitySlotId, request.Patient.Dni);
             throw new ConflictException(
                 nameof(ErrorCodes.APPOINTMENT_CONCURRENCY),
                 ErrorCodes.APPOINTMENT_CONCURRENCY);
@@ -68,29 +63,33 @@ public class AppointmentService : IAppointmentService
 
         _logger.LogInformation(
             "Turno reservado: TurnId={TurnId}, Paciente={Dni}, Fecha={Fecha}",
-            turn.Id, request.Dni, turn.ScheduledDate);
+            turn.Id, request.Patient.Dni, turn.ScheduledDate);
 
         return ToResponse(appointment, patient);
     }
 
-    public async Task<IEnumerable<AppointmentModel.Response>> GetByPatient(string dni)
+    public async Task<IEnumerable<AppointmentModel.Response>> GetByPatient(string dni, string? callerUserId, bool isAdmin)
     {
-        if (dni.Length < 7 || dni.Length > 10 || !dni.All(char.IsDigit))
-            throw new ValidationException(
-                ErrorCodes.APPOINTMENT_PATIENT_NOT_FOUND,
-                nameof(ErrorCodes.APPOINTMENT_PATIENT_NOT_FOUND));
+        if (!isAdmin)
+        {
+            var caller = await _persistence.First<Patient>(p => p.UserId == callerUserId)
+                ?? throw new AuthorizationException();
+
+            if (caller.Dni != dni)
+                throw new AuthorizationException();
+        }
 
         var patient = await _persistence.First<Patient>(p => p.Dni == dni)
             ?? throw new EntityNotFoundException(nameof(Patient));
 
         var dates = await _persistence.GetFiltered<Date>(
-            d => d.PatientId == patient.Id);
+        d => d.PatientId == patient.Id && d.Status == DateState.BOOKED);
 
         return (dates ?? Enumerable.Empty<Date>())
             .Select(d => ToResponse(d, patient));
     }
 
-    public async Task<IEnumerable<AppointmentModel.SearchResponse>> Search(string patientDni, Guid? doctorId)
+    public async Task<Pagination<AppointmentModel.SearchResponse>> Search(int pageSize, int pageIndex, string? patientDni, Guid? doctorId, Guid? specialtyId, DateTime? date)
     {
         if (!string.IsNullOrWhiteSpace(patientDni) && !patientDni.IsDniValid())
         {
@@ -103,34 +102,25 @@ public class AppointmentService : IAppointmentService
             "Turn.Availability.Doctor.Specialty"
         };
 
-        var dates = await _persistence.GetFiltered<Date>(d =>
-            (string.IsNullOrWhiteSpace(patientDni) || (d.Patient != null && d.Patient.Dni == patientDni)) &&
-            (!doctorId.HasValue || (d.Turn != null && d.Turn.Availability != null && d.Turn.Availability.DoctorId == doctorId.Value)),
-            includes);
+        var page = await _persistence.Paginate<Date, DateTime>(
+        pageSize, pageIndex,
+        d => (string.IsNullOrWhiteSpace(patientDni) || (d.Patient != null && d.Patient.Dni == patientDni))
+          && (!doctorId.HasValue || (d.Turn != null && d.Turn.Availability != null && d.Turn.Availability.DoctorId == doctorId.Value))
+          && (!specialtyId.HasValue || (d.Turn != null && d.Turn.Availability != null && d.Turn.Availability.Doctor != null && d.Turn.Availability.Doctor.SpecialityId == specialtyId.Value))
+          && (!date.HasValue || (d.Turn != null && d.Turn.ScheduledDate.Date == date.Value.Date)),
+        d => d.AppointmentDate,
+        includes);
 
-        if (dates == null)
-        {
-            return Enumerable.Empty<AppointmentModel.SearchResponse>();
-        }
-
-        return dates.Select(d => new AppointmentModel.SearchResponse(
-            d.Id,
-            d.AppointmentDate,
-            d.Status,   
-            d.Motive,
-            d.Turn?.StartTime ?? TimeSpan.Zero,
-            d.Turn?.EndTime ?? TimeSpan.Zero,
-
-            new AppointmentModel.PatientSearchResponse(
-                d.Patient?.Dni ?? "Sin DNI",
-                d.Patient?.Name ?? "Sin Nombre"
-            ),
-
+        return page.Map(d => new AppointmentModel.SearchResponse(
+            d.Id, d.AppointmentDate, d.Status, d.Motive,
+            d.Turn?.StartTime ?? TimeSpan.Zero, d.Turn?.EndTime ?? TimeSpan.Zero,
+            new AppointmentModel.PatientSearchResponse(d.Patient?.Dni ?? "Sin DNI", d.Patient?.Name ?? "Sin Nombre"),
             new AppointmentModel.DoctorSearchResponse(
+                d.Turn?.Availability?.DoctorId ?? Guid.Empty,
                 d.Turn?.Availability?.Doctor?.Name ?? "Sin Nombre",
-                d.Turn?.Availability?.Doctor?.Speciality?.Name ?? "Sin Especialidad"
-            )
-        ));
+                new AppointmentModel.SpecialtySearchResponse(
+                    d.Turn?.Availability?.Doctor?.SpecialityId ?? Guid.Empty,
+                    d.Turn?.Availability?.Doctor?.Speciality?.Name ?? "Sin Especialidad"))));
 
     }
 

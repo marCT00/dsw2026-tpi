@@ -4,7 +4,7 @@ public class Speciality : EntityBase
 {
     public string Name { get; private set; }
     public string Description { get; private set; }
-    public bool IsActive { get; private set; }
+    public bool Deleted { get; private set; }
     public ICollection<Doctor> Doctors { get; private set; } = new List<Doctor>();
 
     #region Constructor for EF
@@ -17,7 +17,7 @@ public class Speciality : EntityBase
     {
         Name = name;
         Description = description;
-        IsActive = true;
+        Deleted = false;
     }
 
     public void UpdateDetails(string name, string description)
@@ -28,6 +28,6 @@ public class Speciality : EntityBase
 
     public void Deactivate()
     {
-        IsActive = false;
+        Deleted = true;
     }
 }

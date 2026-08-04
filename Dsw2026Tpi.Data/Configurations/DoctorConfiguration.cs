@@ -20,14 +20,14 @@ public class DoctorConfiguration : IEntityTypeConfiguration<Doctor>
             .IsRequired()
             .HasMaxLength(50);
 
-        builder.Property(d => d.IsActive)
-            .HasDefaultValue(true);
+        builder.Property(d => d.Deleted)
+            .HasDefaultValue(false);
 
         builder.HasOne(d => d.Speciality)
             .WithMany(s => s.Doctors)
             .HasForeignKey(d => d.SpecialityId)
             .OnDelete(DeleteBehavior.Restrict);
 
-        builder.HasQueryFilter(d => d.IsActive);
+        builder.HasQueryFilter(d => !d.Deleted);
     }
 }

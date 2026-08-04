@@ -4,7 +4,7 @@ namespace Dsw2026Tpi.Application.Dtos;
 
 public static class AppointmentModel
 {
-    public record Request(Guid DoctorId, Guid AvailabilitySlotId, PatientRequest Patient, string Motive);
+    public record Request(Guid DoctorId, Guid AvailabilitySlotId, PatientRequest Patient, string Reason);
     public record PatientRequest(string Dni);
 
     public record Response(
@@ -12,7 +12,7 @@ public static class AppointmentModel
         DateTime AppointmentDate,
         DateState Status,
         DateTime? CancellationDate,
-        string Motive,
+        string Reason,
         Guid TurnId,
         Guid PatientId,
         string? PatientDni,
@@ -23,7 +23,7 @@ public static class AppointmentModel
         Guid Id,
         DateTime AppointmentDate,
         DateState Status,
-        string Motive,
+        string Reason,
         TimeSpan StartTime,
         TimeSpan EndTime,
         PatientSearchResponse Patient,

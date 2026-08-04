@@ -4,6 +4,36 @@
     <TargetFramework>net10.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <IsPackable>false</IsPackable>
+    <IsTestProject>true</IsTestProject>
   </PropertyGroup>
 
-</Project>
+  <ItemGroup>
+    <!-- estas 4 líneas ya las va a haber agregado el "dotnet add package" del paso 2 -->
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="..." />
+    <PackageReference Include="xunit" Version="..." />
+    <PackageReference Include="xunit.runner.visualstudio" Version="..." />
+    <PackageReference Include="Moq" Version="..." />
+  </ItemGroup>
+
+</Project>  <ItemGroup>
+    <ProjectReference Include="..\Dsw2026Tpi.Application\Dsw2026Tpi.Application.csproj" />
+    <ProjectReference Include="..\Dsw2026Tpi.CrossCutting\Dsw2026Tpi.CrossCutting.csproj" />
+    <ProjectReference Include="..\Dsw2026Tpi.Domain\Dsw2026Tpi.Domain.csproj" />
+  </ItemGroup>
+
+	<PropertyGroup>
+		<TargetFramework>net10.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+		<IsPackable>false</IsPackable>
+		<IsTestProject>true</IsTestProject>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<!-- estas 4 líneas ya las va a haber agregado el "dotnet add package" del paso 2 -->
+		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="..." />
+		<PackageReference Include="xunit" Version="..." />
+		<PackageReference Include="xunit.runner.visualstudio" Version="..." />
+		<PackageReference Include="Moq" Version="..." />
+	

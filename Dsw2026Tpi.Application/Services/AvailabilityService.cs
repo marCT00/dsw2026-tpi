@@ -75,40 +75,31 @@ public class AvailabilityService : IAvailabilityService
         var dayRulesForOverlap = days.Select(d => (d.DayOfWeek, d.StartTime, d.EndTime));
         ValidationsExtensions.ValidateInternalOverlap(dayRulesForOverlap);
 
-      /*  var existingTurns = await _persistence.GetFiltered<Turn>(
-            t => t.Availability != null
-                && t.Availability.DoctorId == request.DoctorId
-                && t.Availability.Year == request.Year
-                && t.Availability.Month == request.Month
-                && t.State != TurnState.AVAILABLE);
-
-        if (existingTurns is not null && existingTurns.Any())
-            throw new ConflictException(
-                nameof(ErrorCodes.AVAILABILITY_MONTH_HAS_BOOKINGS),
-                ErrorCodes.AVAILABILITY_MONTH_HAS_BOOKINGS); */
-
         var existingAvailabilities = await _persistence.GetFiltered<Availability>(
             a => a.DoctorId == request.DoctorId
                 && a.Year == request.Year
                 && a.Month == request.Month);
 
-        if (existingAvailabilities is not null)
+        if (existingAvailabilities is not null && existingAvailabilities.Any())
         {
-            foreach (var existing in existingAvailabilities)
-            {
-                var turns = await _persistence.GetFiltered<Turn>(
-                    t => t.AvailabilityId == existing.Id);
-                if (turns is not null)
-                {
-                    foreach (var turn in turns)
-                        await _persistence.Delete(turn);
-                }
-                await _persistence.Delete(existing);
-            }
-        }
 
-        ValidateDbOverlap(request.DoctorId, request.Year, request.Month, days, null)
-            .GetAwaiter().GetResult();
+            var existingIds = existingAvailabilities.Select(a => a.Id).ToList();
+
+            var existingTurns = await _persistence.GetFiltered<Turn>(
+                t => t.AvailabilityId != null && existingIds.Contains(t.AvailabilityId.Value));
+
+            if (existingTurns is not null && existingTurns.Any(t => t.State != TurnState.AVAILABLE))
+                throw new ConflictException(
+                    nameof(ErrorCodes.AVAILABILITY_MONTH_HAS_BOOKINGS),
+                    ErrorCodes.AVAILABILITY_MONTH_HAS_BOOKINGS);
+
+            if (existingTurns is not null)
+                foreach (var turn in existingTurns)
+                    await _persistence.Delete(turn);
+
+            foreach (var existing in existingAvailabilities)
+                await _persistence.Delete(existing);
+        }
 
         var created = new List<AvailabilityModel.Response>();
         foreach (var day in days)

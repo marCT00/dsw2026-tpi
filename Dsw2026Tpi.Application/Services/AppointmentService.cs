@@ -21,33 +21,28 @@ public class AppointmentService : IAppointmentService
         _logger = logger;
     }
 
-    public async Task<AppointmentModel.Response> Create(AppointmentModel.Request request) //modificar validaciones
+    public async Task<AppointmentModel.Response> Create(AppointmentModel.Request request)
     {
-        if (string.IsNullOrWhiteSpace(request.Motive) || request.Motive.Length < 3 || request.Motive.Length > 500)
-            throw new ValidationException(
-                ErrorCodes.APPOINTMENT_INVALID_MOTIVE,
-                nameof(ErrorCodes.APPOINTMENT_INVALID_MOTIVE));
+        ValidationsExtensions.ValidateStringLength(request.Motive, 3, 500, ErrorCodes.APPOINTMENT_INVALID_MOTIVE, nameof(ErrorCodes.APPOINTMENT_INVALID_MOTIVE));
+        ValidationsExtensions.IsDniValid(request.Patient.Dni);
 
-        if (request.Dni.Length < 7 || request.Dni.Length > 10 || !request.Dni.All(char.IsDigit))
-            throw new ValidationException(
-                ErrorCodes.APPOINTMENT_PATIENT_NOT_FOUND,
-                nameof(ErrorCodes.APPOINTMENT_PATIENT_NOT_FOUND));
+        var doctor = await _persistence.GetById<Doctor>(request.DoctorId)
+        ?? throw new EntityNotFoundException(nameof(Doctor));
 
-        var patient = await _persistence.First<Patient>(p => p.Dni == request.Dni)
+        var patient = await _persistence.First<Patient>(p => p.Dni == request.Patient.Dni)
             ?? throw new EntityNotFoundException(nameof(Patient));
 
-        var turn = await _persistence.GetById<Turn>(request.TurnId)
+        var turn = await _persistence.GetById<Turn>(request.AvailabilitySlotId, nameof(Turn.Availability))
             ?? throw new EntityNotFoundException(nameof(Turn));
 
+        if (turn.Availability?.DoctorId != request.DoctorId)
+            throw new ValidationException(ErrorCodes.APPOINTMENT_SLOT_UNAVAILABLE, nameof(ErrorCodes.APPOINTMENT_SLOT_UNAVAILABLE));
+
         if (turn.ScheduledDate.Date < DateTime.UtcNow.Date)
-            throw new ValidationException(
-                ErrorCodes.APPOINTMENT_PAST_DATE,
-                nameof(ErrorCodes.APPOINTMENT_PAST_DATE));
+            throw new ValidationException(ErrorCodes.APPOINTMENT_PAST_DATE, nameof(ErrorCodes.APPOINTMENT_PAST_DATE));
 
         if (turn.State != TurnState.AVAILABLE)
-            throw new ConflictException(
-                nameof(ErrorCodes.APPOINTMENT_SLOT_UNAVAILABLE),
-                ErrorCodes.APPOINTMENT_SLOT_UNAVAILABLE);
+            throw new ConflictException(nameof(ErrorCodes.APPOINTMENT_SLOT_UNAVAILABLE), ErrorCodes.APPOINTMENT_SLOT_UNAVAILABLE);
 
         var appointment = new Date(turn.ScheduledDate, patient, turn, request.Motive);
 
@@ -60,7 +55,7 @@ public class AppointmentService : IAppointmentService
         {
             _logger.LogWarning(
                 "Conflicto de concurrencia al reservar turno {TurnId} para paciente {Dni}",
-                request.TurnId, request.Dni);
+                request.AvailabilitySlotId, request.Patient.Dni);
             throw new ConflictException(
                 nameof(ErrorCodes.APPOINTMENT_CONCURRENCY),
                 ErrorCodes.APPOINTMENT_CONCURRENCY);
@@ -68,7 +63,7 @@ public class AppointmentService : IAppointmentService
 
         _logger.LogInformation(
             "Turno reservado: TurnId={TurnId}, Paciente={Dni}, Fecha={Fecha}",
-            turn.Id, request.Dni, turn.ScheduledDate);
+            turn.Id, request.Patient.Dni, turn.ScheduledDate);
 
         return ToResponse(appointment, patient);
     }

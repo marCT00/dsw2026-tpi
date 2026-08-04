@@ -4,7 +4,8 @@ namespace Dsw2026Tpi.Application.Dtos;
 
 public static class AppointmentModel
 {
-    public record Request(string Dni, Guid TurnId, string Motive);
+    public record Request(Guid DoctorId, Guid AvailabilitySlotId, PatientRequest Patient, string Motive);
+    public record PatientRequest(string Dni);
 
     public record Response(
         Guid Id,

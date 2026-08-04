@@ -43,9 +43,9 @@ public class AppointmentController : ControllerBase
     [HttpGet("search")]
     [Authorize(Policy = Policies.AdminPolicy)]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public async Task<IActionResult> Search([FromQuery] string patientDni, [FromQuery] Guid? doctorId)
+    public async Task<IActionResult> Search([FromQuery] int pageSize = 10, [FromQuery] int pageIndex = 1,[FromQuery] string? patientDni = null, [FromQuery] Guid? doctorId = null,[FromQuery] Guid? specialtyId = null,[FromQuery] DateTime? date = null)
     {
-        var result = await _appointmentService.Search(patientDni, doctorId);
+        var result = await _appointmentService.Search(pageSize, pageIndex, patientDni, doctorId, specialtyId, date);
         return Ok(result);
     }
 

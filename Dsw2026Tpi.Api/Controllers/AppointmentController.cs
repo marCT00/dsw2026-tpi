@@ -55,7 +55,7 @@ public class AppointmentController : ControllerBase
     public async Task<IActionResult> Cancel([FromRoute] Guid id)
     {
         await _appointmentService.Cancel(id);
-        return Ok();
+        return Ok("ok");
     }
 
     [HttpGet]

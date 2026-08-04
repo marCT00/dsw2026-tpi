@@ -53,6 +53,6 @@ public class SpecialtiesController : ControllerBase
     public async Task<IActionResult> Delete(Guid id)
     {
         await _specialityService.Delete(id);
-        return NoContent();
+        return Ok("ok");
     }
 }

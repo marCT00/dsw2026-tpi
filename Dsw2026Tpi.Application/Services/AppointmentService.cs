@@ -21,7 +21,7 @@ public class AppointmentService : IAppointmentService
         _logger = logger;
     }
 
-    public async Task<AppointmentModel.Response> Create(AppointmentModel.Request request)
+    public async Task<AppointmentModel.Response> Create(AppointmentModel.Request request) //modificar validaciones
     {
         if (string.IsNullOrWhiteSpace(request.Motive) || request.Motive.Length < 3 || request.Motive.Length > 500)
             throw new ValidationException(
@@ -88,6 +88,50 @@ public class AppointmentService : IAppointmentService
 
         return (dates ?? Enumerable.Empty<Date>())
             .Select(d => ToResponse(d, patient));
+    }
+
+    public async Task<IEnumerable<AppointmentModel.SearchResponse>> Search(string patientDni, Guid? doctorId)
+    {
+        if (!string.IsNullOrWhiteSpace(patientDni) && !patientDni.IsDniValid())
+        {
+            throw new ValidationException(ErrorCodes.APPOINTMENT_PATIENT_NOT_FOUND,nameof(ErrorCodes.APPOINTMENT_PATIENT_NOT_FOUND));
+        }
+
+        string[] includes =
+        {
+            "Patient",
+            "Turn.Availability.Doctor.Specialty"
+        };
+
+        var dates = await _persistence.GetFiltered<Date>(d =>
+            (string.IsNullOrWhiteSpace(patientDni) || (d.Patient != null && d.Patient.Dni == patientDni)) &&
+            (!doctorId.HasValue || (d.Turn != null && d.Turn.Availability != null && d.Turn.Availability.DoctorId == doctorId.Value)),
+            includes);
+
+        if (dates == null)
+        {
+            return Enumerable.Empty<AppointmentModel.SearchResponse>();
+        }
+
+        return dates.Select(d => new AppointmentModel.SearchResponse(
+            d.Id,
+            d.AppointmentDate,
+            d.Status,   
+            d.Motive,
+            d.Turn?.StartTime ?? TimeSpan.Zero,
+            d.Turn?.EndTime ?? TimeSpan.Zero,
+
+            new AppointmentModel.PatientSearchResponse(
+                d.Patient?.Dni ?? "Sin DNI",
+                d.Patient?.Name ?? "Sin Nombre"
+            ),
+
+            new AppointmentModel.DoctorSearchResponse(
+                d.Turn?.Availability?.Doctor?.Name ?? "Sin Nombre",
+                d.Turn?.Availability?.Doctor?.Speciality?.Name ?? "Sin Especialidad"
+            )
+        ));
+
     }
 
     public async Task Cancel(Guid id)

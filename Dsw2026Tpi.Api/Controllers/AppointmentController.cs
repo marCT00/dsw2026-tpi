@@ -3,6 +3,7 @@ using Dsw2026Tpi.Application.Interfaces;
 using Dsw2026Tpi.CrossCutting.Identity;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace Dsw2026Tpi.Api.Controllers;
 
@@ -20,6 +21,7 @@ public class AppointmentController : ControllerBase
 
     [HttpPost]
     [Authorize(Policy = Policies.PatientPolicy)]
+    [EnableRateLimiting("BookingPolicy")]
     [ProducesResponseType(StatusCodes.Status201Created)]
     public async Task<IActionResult> Create([FromBody] AppointmentModel.Request request)
     {
@@ -32,6 +34,14 @@ public class AppointmentController : ControllerBase
     public async Task<IActionResult> GetByPatient([FromQuery] string dni)
     {
         var result = await _appointmentService.GetByPatient(dni);
+        return Ok(result);
+    }
+
+    [HttpGet("search")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<IActionResult> Search([FromQuery] string patientDni, [FromQuery] Guid? doctorId)
+    {
+        var result = await _appointmentService.Search(patientDni, doctorId);
         return Ok(result);
     }
 

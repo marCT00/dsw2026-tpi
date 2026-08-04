@@ -17,4 +17,17 @@ public static class AppointmentModel
         string? PatientDni,
         TimeSpan StartTime,
         TimeSpan EndTime);
+
+    public record SearchResponse(
+        Guid Id,
+        DateTime AppointmentDate,
+        DateState Status,
+        string Motive,
+        TimeSpan StartTime,
+        TimeSpan EndTime,
+        PatientSearchResponse Patient,
+        DoctorSearchResponse Doctor);
+
+    public record PatientSearchResponse(string Dni, string Name);
+    public record DoctorSearchResponse(string Name, string Specialty);
 }

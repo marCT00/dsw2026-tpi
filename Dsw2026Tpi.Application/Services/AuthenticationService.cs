@@ -72,7 +72,7 @@ public class AuthenticationService : IAuthenticationService
         {
             var existingByDni = await _persistence.First<Patient>(p => p.Dni == request.Dni);
             if (existingByDni is not null)
-                throw new ConflictException(ErrorCodes.REGISTER_USER_CONFLICT, nameof(ErrorCodes.REGISTER_USER_CONFLICT));
+                throw new ConflictException(nameof(ErrorCodes.REGISTER_USER_CONFLICT), ErrorCodes.REGISTER_USER_CONFLICT);
 
             user = new ApplicationUser
             {
@@ -105,7 +105,7 @@ public class AuthenticationService : IAuthenticationService
         }
 
         var role = (await _userManager.GetRolesAsync(user)).FirstOrDefault();
-        var token = _jwtService.GenerateToken(user.UserName!, role);
+        var token = _jwtService.GenerateToken(user.Id,user.UserName!, role);
 
         return new LoginPatientModel.Response(token, role);
     }

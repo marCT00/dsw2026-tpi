@@ -30,7 +30,7 @@ public class DoctorController : AppController
     public async Task<IActionResult> Create([FromBody] DoctorModel.Request doctor)
     {
         var createdDoctor = await _service.Create(doctor);
-        return CreatedAtAction(nameof(GetAll), new { id = createdDoctor.Id }, createdDoctor);
+        return CreatedAtAction(nameof(GetById), new { id = createdDoctor.Id }, createdDoctor);
     }
 
     [HttpPut("{id}")]

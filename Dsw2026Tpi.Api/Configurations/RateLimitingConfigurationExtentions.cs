@@ -71,8 +71,8 @@ namespace Dsw2026Tpi.Api.Configurations
                     var loggerFactory = context.HttpContext.RequestServices.GetRequiredService<ILoggerFactory>();
                     var logger = loggerFactory.CreateLogger("RateLimiting");
 
-                    logger.LogWarning("Rate limit superado. IP/User: {IpUser}",
-                        context.HttpContext.Connection.RemoteIpAddress);
+                    logger.LogWarning("Rate limit superado. IP/User: {IpUser}. Endpoint: {Endpoint}",
+                        context.HttpContext.Connection.RemoteIpAddress, context.HttpContext.Request.Path);
 
                     var errorResponse = new
                     {

@@ -21,7 +21,7 @@ public class AppointmentService : IAppointmentService
         _logger = logger;
     }
 
-    public async Task<AppointmentModel.Response> Create(AppointmentModel.Request request)
+    public async Task<AppointmentModel.Response> Create(AppointmentModel.Request request) //modificar validaciones
     {
         if (string.IsNullOrWhiteSpace(request.Motive) || request.Motive.Length < 3 || request.Motive.Length > 500)
             throw new ValidationException(

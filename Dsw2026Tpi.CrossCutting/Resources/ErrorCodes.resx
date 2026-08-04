@@ -177,7 +177,7 @@
   <data name="AVAILABILITY_MONTH_HAS_BOOKINGS" xml:space="preserve">
     <value>No se puede modificar el mes porque tiene turnos reservados o bloqueados</value>
   </data>
-  <data name="APPOINTMENT_INVALID_MOTIVE" xml:space="preserve">
+  <data name="APPOINTMENT_INVALID_REASON" xml:space="preserve">
     <value>El motivo debe tener entre 3 y 500 caracteres</value>
   </data>
   <data name="APPOINTMENT_SLOT_UNAVAILABLE" xml:space="preserve">

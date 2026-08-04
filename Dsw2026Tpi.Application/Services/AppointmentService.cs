@@ -23,7 +23,7 @@ public class AppointmentService : IAppointmentService
 
     public async Task<AppointmentModel.Response> Create(AppointmentModel.Request request)
     {
-        ValidationsExtensions.ValidateStringLength(request.Motive, 3, 500, ErrorCodes.APPOINTMENT_INVALID_MOTIVE, nameof(ErrorCodes.APPOINTMENT_INVALID_MOTIVE));
+        ValidationsExtensions.ValidateStringLength(request.Reason, 3, 500, ErrorCodes.APPOINTMENT_INVALID_REASON, nameof(ErrorCodes.APPOINTMENT_INVALID_REASON));
 
         if (!request.Patient.Dni.IsDniValid())
             throw new ValidationException(ErrorCodes.APPOINTMENT_PATIENT_NOT_FOUND, nameof(ErrorCodes.APPOINTMENT_PATIENT_NOT_FOUND));
@@ -46,7 +46,7 @@ public class AppointmentService : IAppointmentService
         if (turn.State != TurnState.AVAILABLE)
             throw new ConflictException(nameof(ErrorCodes.APPOINTMENT_SLOT_UNAVAILABLE), ErrorCodes.APPOINTMENT_SLOT_UNAVAILABLE);
 
-        var appointment = new Date(turn.ScheduledDate, patient, turn, request.Motive);
+        var appointment = new Date(turn.ScheduledDate, patient, turn, request.Reason);
 
         try
         {

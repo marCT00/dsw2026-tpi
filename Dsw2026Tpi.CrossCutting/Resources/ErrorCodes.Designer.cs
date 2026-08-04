@@ -81,9 +81,9 @@ namespace Dsw2026Tpi.CrossCutting.Resources {
         /// <summary>
         ///   Busca una cadena traducida similar a El motivo debe tener entre 3 y 500 caracteres.
         /// </summary>
-        public static string APPOINTMENT_INVALID_MOTIVE {
+        public static string APPOINTMENT_INVALID_REASON {
             get {
-                return ResourceManager.GetString("APPOINTMENT_INVALID_MOTIVE", resourceCulture);
+                return ResourceManager.GetString("APPOINTMENT_INVALID_REASON", resourceCulture);
             }
         }
         

@@ -100,7 +100,6 @@ public class AvailabilityService : IAvailabilityService
             foreach (var existing in existingAvailabilities)
                 await _persistence.Delete(existing);
         }
-
         var created = new List<AvailabilityModel.Response>();
         foreach (var day in days)
         {

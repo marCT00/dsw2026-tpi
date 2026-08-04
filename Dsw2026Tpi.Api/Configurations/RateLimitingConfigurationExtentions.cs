@@ -14,20 +14,28 @@ namespace Dsw2026Tpi.Api.Configurations
 
             services.AddRateLimiter(options =>
             {
-                // Política 1: Login Admin
-                options.AddFixedWindowLimiter("AdminLoginPolicy", opt =>
+                options.AddPolicy("AdminLoginPolicy", context => //login Admin
                 {
-                    opt.PermitLimit = rateLimitingSettings.AdminLoginLimit;
-                    opt.Window = windowTime;
-                    opt.QueueLimit = 0;
+                    var ip = context.Connection.RemoteIpAddress?.ToString() ?? "unknown";
+                    return RateLimitPartition.GetFixedWindowLimiter(ip, _ =>
+                        new FixedWindowRateLimiterOptions
+                        {
+                            PermitLimit = rateLimitingSettings.AdminLoginLimit,
+                            Window = windowTime,
+                            QueueLimit = 0
+                        });
                 });
 
-                // Política 2: Login Paciente
-                options.AddFixedWindowLimiter("PatientLoginPolicy", opt =>
+                options.AddPolicy("PatientLoginPolicy", context =>   //login paciente
                 {
-                    opt.PermitLimit = rateLimitingSettings.PatientLoginLimit;
-                    opt.Window = windowTime;
-                    opt.QueueLimit = 0;
+                    var ip = context.Connection.RemoteIpAddress?.ToString() ?? "unknown";
+                    return RateLimitPartition.GetFixedWindowLimiter(ip, _ =>
+                        new FixedWindowRateLimiterOptions
+                        {
+                            PermitLimit = rateLimitingSettings.PatientLoginLimit,
+                            Window = windowTime,
+                            QueueLimit = 0
+                        });
                 });
 
                 // Política 3: Reservas (Por Paciente Autenticado)

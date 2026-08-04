@@ -50,7 +50,7 @@ public class AuthenticationService : IAuthenticationService
 
         var role = (await _userManager.GetRolesAsync(user)).FirstOrDefault();
 
-        var token = _jwtService.GenerateToken(user.Id, user.UserName!, role);
+        var token = _jwtService.GenerateToken(user.Id,user.UserName!, role);
 
         return new LoginAdminModel.Response(
             token,
@@ -62,9 +62,7 @@ public class AuthenticationService : IAuthenticationService
     {
         if (!request.Email.IsEmailValid()) throw new AuthenticationException();
 
-        ValidationsExtensions.ValidateStringLength(request.Dni, 7, 8, ErrorCodes.INVALID_DNI, nameof(ErrorCodes.INVALID_DNI));
-        if (!request.Dni.All(char.IsDigit))
-            throw new ValidationException(ErrorCodes.INVALID_DNI, nameof(ErrorCodes.INVALID_DNI));
+        ValidationsExtensions.IsDniValid(request.Dni);
 
         var user = await _userManager.FindByEmailAsync(request.Email);
 

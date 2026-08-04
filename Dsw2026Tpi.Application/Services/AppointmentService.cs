@@ -24,7 +24,9 @@ public class AppointmentService : IAppointmentService
     public async Task<AppointmentModel.Response> Create(AppointmentModel.Request request)
     {
         ValidationsExtensions.ValidateStringLength(request.Motive, 3, 500, ErrorCodes.APPOINTMENT_INVALID_MOTIVE, nameof(ErrorCodes.APPOINTMENT_INVALID_MOTIVE));
-        ValidationsExtensions.IsDniValid(request.Patient.Dni);
+
+        if (!request.Patient.Dni.IsDniValid())
+            throw new ValidationException(ErrorCodes.APPOINTMENT_PATIENT_NOT_FOUND, nameof(ErrorCodes.APPOINTMENT_PATIENT_NOT_FOUND));
 
         var doctor = await _persistence.GetById<Doctor>(request.DoctorId)
         ?? throw new EntityNotFoundException(nameof(Doctor));

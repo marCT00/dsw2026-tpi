@@ -57,4 +57,12 @@ public class AppointmentController : ControllerBase
         await _appointmentService.Cancel(id);
         return Ok();
     }
+
+    [HttpGet]
+    [Authorize(Policy = Policies.AdminPolicy)]
+    public async Task<IActionResult> GetByDate([FromQuery] DateTime date)
+    {
+        var result = await _appointmentService.Search(pageSize: 100, pageIndex: 1, patientDni: null, doctorId: null, specialtyId: null, date: date);
+        return Ok(result);
+    }
 }

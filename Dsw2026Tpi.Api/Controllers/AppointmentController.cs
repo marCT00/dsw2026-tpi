@@ -4,6 +4,7 @@ using Dsw2026Tpi.CrossCutting.Identity;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
+using System.Security.Claims;
 
 namespace Dsw2026Tpi.Api.Controllers;
 
@@ -33,7 +34,9 @@ public class AppointmentController : ControllerBase
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> GetByPatient([FromQuery] string dni)
     {
-        var result = await _appointmentService.GetByPatient(dni);
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        var isAdmin = User.IsInRole(Roles.Administrator);
+        var result = await _appointmentService.GetByPatient(dni, userId, isAdmin);
         return Ok(result);
     }
 

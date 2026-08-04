@@ -73,12 +73,16 @@ public class AppointmentService : IAppointmentService
         return ToResponse(appointment, patient);
     }
 
-    public async Task<IEnumerable<AppointmentModel.Response>> GetByPatient(string dni)
+    public async Task<IEnumerable<AppointmentModel.Response>> GetByPatient(string dni, string? callerUserId, bool isAdmin)
     {
-        if (dni.Length < 7 || dni.Length > 10 || !dni.All(char.IsDigit))
-            throw new ValidationException(
-                ErrorCodes.APPOINTMENT_PATIENT_NOT_FOUND,
-                nameof(ErrorCodes.APPOINTMENT_PATIENT_NOT_FOUND));
+        if (!isAdmin)
+        {
+            var caller = await _persistence.First<Patient>(p => p.UserId == callerUserId)
+                ?? throw new AuthorizationException();
+
+            if (caller.Dni != dni)
+                throw new AuthorizationException();
+        }
 
         var patient = await _persistence.First<Patient>(p => p.Dni == dni)
             ?? throw new EntityNotFoundException(nameof(Patient));

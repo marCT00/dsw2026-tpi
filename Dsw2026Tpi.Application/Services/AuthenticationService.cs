@@ -50,7 +50,7 @@ public class AuthenticationService : IAuthenticationService
 
         var role = (await _userManager.GetRolesAsync(user)).FirstOrDefault();
 
-        var token = _jwtService.GenerateToken(user.UserName!, role);
+        var token = _jwtService.GenerateToken(user.Id, user.UserName!, role);
 
         return new LoginAdminModel.Response(
             token,

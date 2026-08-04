@@ -38,6 +38,7 @@ public class AppointmentController : ControllerBase
     }
 
     [HttpGet("search")]
+    [Authorize(Policy = Policies.AdminPolicy)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> Search([FromQuery] string patientDni, [FromQuery] Guid? doctorId)
     {

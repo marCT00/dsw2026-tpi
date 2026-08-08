@@ -195,4 +195,13 @@
   <data name="APPOINTMENT_ALREADY_CANCELLED" xml:space="preserve">
     <value>El turno ya fue cancelado o atendido</value>
   </data>
+  <data name="AVAILABILITY_INVALID_DAY" xml:space="preserve">
+    <value>El día ingresado no es válido (ingresar de 0 Domingo - 6 Sábado)</value>
+  </data>
+  <data name="AVAILABILITY_INVALID_WEEKENDDAY" xml:space="preserve">
+    <value>el día debe ser hábil</value>
+  </data>
+  <data name="AVAILABILITY_INVALID_RULEDAY" xml:space="preserve">
+    <value>Se debe proporcionar al menos una regla </value>
+  </data>
 </root>

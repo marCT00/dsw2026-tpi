@@ -28,9 +28,9 @@ public class AvailabilityService : IAvailabilityService
         var doctor = await _persistence.GetById<Doctor>(request.DoctorId)
             ?? throw new EntityNotFoundException(nameof(Doctor));
 
-        ValidationsExtensions.ValidateMonthYear(request.Month, request.Year);
         var days = request.Days.ToList();
-
+        ValidationsExtensions.ValidateDayMonthYear(request.Month, request.Year, days.Select(d => d.DayOfWeek));
+        
         var dayRulesBasic = days.Select(d => (d.StartTime, d.EndTime));
         ValidationsExtensions.ValidateDayRules(dayRulesBasic, SlotDurationMinutes);
 
@@ -66,8 +66,8 @@ public class AvailabilityService : IAvailabilityService
         var doctor = await _persistence.GetById<Doctor>(request.DoctorId)
             ?? throw new EntityNotFoundException(nameof(Doctor));
 
-        ValidationsExtensions.ValidateMonthYear(request.Month, request.Year);
         var days = request.Days.ToList();
+        ValidationsExtensions.ValidateDayMonthYear(request.Month, request.Year, days.Select(d => d.DayOfWeek));
 
         var dayRulesBasic = days.Select(d => (d.StartTime, d.EndTime));
         ValidationsExtensions.ValidateDayRules(dayRulesBasic, SlotDurationMinutes);

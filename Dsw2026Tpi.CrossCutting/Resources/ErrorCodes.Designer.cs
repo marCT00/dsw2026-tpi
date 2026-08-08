@@ -133,6 +133,15 @@ namespace Dsw2026Tpi.CrossCutting.Resources {
         }
         
         /// <summary>
+        ///   Busca una cadena traducida similar a El día ingresado no es válido (ingresar de 0 Domingo - 6 Sábado).
+        /// </summary>
+        public static string AVAILABILITY_INVALID_DAY {
+            get {
+                return ResourceManager.GetString("AVAILABILITY_INVALID_DAY", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Busca una cadena traducida similar a El rango horario debe ser múltiplo de 30 minutos y estar alineado a la grilla (:00 o :30).
         /// </summary>
         public static string AVAILABILITY_INVALID_DURATION {
@@ -156,6 +165,24 @@ namespace Dsw2026Tpi.CrossCutting.Resources {
         public static string AVAILABILITY_INVALID_RANGE {
             get {
                 return ResourceManager.GetString("AVAILABILITY_INVALID_RANGE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Busca una cadena traducida similar a Se debe proporcionar al menos una regla .
+        /// </summary>
+        public static string AVAILABILITY_INVALID_RULEDAY {
+            get {
+                return ResourceManager.GetString("AVAILABILITY_INVALID_RULEDAY", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Busca una cadena traducida similar a el día debe ser hábil.
+        /// </summary>
+        public static string AVAILABILITY_INVALID_WEEKENDDAY {
+            get {
+                return ResourceManager.GetString("AVAILABILITY_INVALID_WEEKENDDAY", resourceCulture);
             }
         }
         

@@ -27,7 +27,7 @@ public static class ValidationsExtensions
         }
     }
 
-    public static void ValidateMonthYear(int month, int year)
+    public static void ValidateDayMonthYear(int month, int year, IEnumerable<DayOfWeek> daysOfWeek)
     {
         if (month < 1 || month > 12)
             throw new ValidationException(ErrorCodes.AVAILABILITY_INVALID_MONTH,nameof(ErrorCodes.AVAILABILITY_INVALID_MONTH));
@@ -36,6 +36,14 @@ public static class ValidationsExtensions
 
         if (year < today.Year || (year == today.Year && month < today.Month))
             throw new ValidationException(ErrorCodes.AVAILABILITY_INVALID_YEAR,nameof(ErrorCodes.AVAILABILITY_INVALID_YEAR));
+
+        foreach(var day in daysOfWeek)
+        {
+            if (!Enum.IsDefined(typeof(DayOfWeek), day))
+                throw new ValidationException(ErrorCodes.AVAILABILITY_INVALID_DAY,nameof(ErrorCodes.AVAILABILITY_INVALID_DAY));
+            if (Enum.Equals(day, DayOfWeek.Sunday)|| Enum.Equals(day, DayOfWeek.Saturday))
+                throw new ValidationException(ErrorCodes.AVAILABILITY_INVALID_WEEKENDDAY,nameof(ErrorCodes.AVAILABILITY_INVALID_WEEKENDDAY));
+        }
     }
 
     public static bool IsAlignedToGrid(TimeSpan time, int slotDurationMinutes) =>
@@ -44,7 +52,7 @@ public static class ValidationsExtensions
     public static void ValidateDayRules(IEnumerable<(TimeSpan Start, TimeSpan End)> days, int slotDurationMinutes)
     {
         if (!days.Any())
-            throw new ValidationException(ErrorCodes.VALIDATION_ERROR,"Se debe proporcionar al menos una regla de día");
+            throw new ValidationException(ErrorCodes.AVAILABILITY_INVALID_RULEDAY,nameof(ErrorCodes.AVAILABILITY_INVALID_RULEDAY));
 
         foreach (var day in days)
         {

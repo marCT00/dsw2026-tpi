@@ -40,7 +40,7 @@ public class AppointmentService : IAppointmentService
         if (turn.Availability?.DoctorId != request.DoctorId)
             throw new ValidationException(ErrorCodes.APPOINTMENT_SLOT_UNAVAILABLE, nameof(ErrorCodes.APPOINTMENT_SLOT_UNAVAILABLE));
 
-        if (turn.ScheduledDate.Date < DateTime.UtcNow.Date)
+        if (turn.ScheduledDate.Date < DateTime.Now.Date)
             throw new ValidationException(ErrorCodes.APPOINTMENT_PAST_DATE, nameof(ErrorCodes.APPOINTMENT_PAST_DATE));
 
         if (turn.State != TurnState.AVAILABLE)
@@ -136,7 +136,7 @@ public class AppointmentService : IAppointmentService
                 nameof(ErrorCodes.APPOINTMENT_ALREADY_CANCELLED),
                 ErrorCodes.APPOINTMENT_ALREADY_CANCELLED);
 
-        appointment.Cancel(DateTime.UtcNow);
+        appointment.Cancel(DateTime.Now);
         await _persistence.Update(appointment);
 
         if (appointment.Turn is not null)

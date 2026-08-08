@@ -53,8 +53,8 @@ public class AdminSeederHostedService : IHostedService
             UserName = email,
             Email = email,
             EmailConfirmed = true,
-            CreatedAt = DateTime.UtcNow,
-            UpdatedAt = DateTime.UtcNow
+            CreatedAt = DateTime.Now,
+            UpdatedAt = DateTime.Now
         };
 
         var result = await userManager.CreateAsync(admin, password);

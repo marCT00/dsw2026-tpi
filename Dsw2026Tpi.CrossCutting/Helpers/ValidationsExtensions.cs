@@ -32,7 +32,7 @@ public static class ValidationsExtensions
         if (month < 1 || month > 12)
             throw new ValidationException(ErrorCodes.AVAILABILITY_INVALID_MONTH,nameof(ErrorCodes.AVAILABILITY_INVALID_MONTH));
 
-        var today = DateTime.UtcNow;
+        var today = DateTime.Now;
 
         if (year < today.Year || (year == today.Year && month < today.Month))
             throw new ValidationException(ErrorCodes.AVAILABILITY_INVALID_YEAR,nameof(ErrorCodes.AVAILABILITY_INVALID_YEAR));

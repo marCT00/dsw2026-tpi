@@ -143,7 +143,7 @@ public class AvailabilityService : IAvailabilityService
 
     private async Task GenerateSlots(Availability availability, int year, int month)
     {
-        var today = DateTime.UtcNow.Date;
+        var today = DateTime.Now.Date;
         var daysInMonth = DateTime.DaysInMonth(year, month);
 
         //feriados

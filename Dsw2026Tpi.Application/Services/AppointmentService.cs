@@ -91,7 +91,7 @@ public class AppointmentService : IAppointmentService
             .Select(d => ToResponse(d, patient));
     }
 
-    public async Task<Pagination<AppointmentModel.SearchResponse>> Search(int pageSize, int pageIndex, string? patientDni, Guid? doctorId, Guid? specialtyId, DateTime? date)
+    public async Task<Pagination<AppointmentModel.SearchResponse>> Search(int pageSize, int pageIndex, string? patientDni, Guid? doctorId, Guid? SpecialityId, DateTime? date)
     {
         if (!string.IsNullOrWhiteSpace(patientDni) && !patientDni.IsDniValid())
         {
@@ -101,14 +101,14 @@ public class AppointmentService : IAppointmentService
         string[] includes =
         {
             "Patient",
-            "Turn.Availability.Doctor.Specialty"
+            "Turn.Availability.Doctor.Speciality"
         };
 
         var page = await _persistence.Paginate<Date, DateTime>(
         pageSize, pageIndex,
         d => (string.IsNullOrWhiteSpace(patientDni) || (d.Patient != null && d.Patient.Dni == patientDni))
           && (!doctorId.HasValue || (d.Turn != null && d.Turn.Availability != null && d.Turn.Availability.DoctorId == doctorId.Value))
-          && (!specialtyId.HasValue || (d.Turn != null && d.Turn.Availability != null && d.Turn.Availability.Doctor != null && d.Turn.Availability.Doctor.SpecialityId == specialtyId.Value))
+          && (!SpecialityId.HasValue || (d.Turn != null && d.Turn.Availability != null && d.Turn.Availability.Doctor != null && d.Turn.Availability.Doctor.SpecialityId == SpecialityId.Value))
           && (!date.HasValue || (d.Turn != null && d.Turn.ScheduledDate.Date == date.Value.Date)),
         d => d.AppointmentDate,
         includes);
@@ -120,7 +120,7 @@ public class AppointmentService : IAppointmentService
             new AppointmentModel.DoctorSearchResponse(
                 d.Turn?.Availability?.DoctorId ?? Guid.Empty,
                 d.Turn?.Availability?.Doctor?.Name ?? "Sin Nombre",
-                new AppointmentModel.SpecialtySearchResponse(
+                new AppointmentModel.SpecialitySearchResponse(
                     d.Turn?.Availability?.Doctor?.SpecialityId ?? Guid.Empty,
                     d.Turn?.Availability?.Doctor?.Speciality?.Name ?? "Sin Especialidad"))));
 

@@ -29,7 +29,7 @@ public static class AppointmentModel
         PatientSearchResponse Patient,
         DoctorSearchResponse Doctor);
 
-    public record DoctorSearchResponse(Guid DoctorId, string Name, SpecialtySearchResponse Specialty);
-    public record SpecialtySearchResponse(Guid SpecialtyId, string Name);
+    public record DoctorSearchResponse(Guid DoctorId, string Name, SpecialitySearchResponse Speciality);
+    public record SpecialitySearchResponse(Guid SpecialityId, string Name);
     public record PatientSearchResponse(string Dni, string Name);
 }

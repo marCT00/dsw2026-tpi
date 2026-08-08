@@ -11,5 +11,5 @@ public static class AvailabilityModel
     public record Response(Guid Id, int Year, int Month, DayOfWeek DayOfWeek,
         TimeSpan StartTime, TimeSpan EndTime, Guid DoctorId);
 
-    public record DoctorAvailabilityResponse(Guid Id, string Day, string StartTime, string EndTime);
+    public record DoctorAvailabilityResponse(Guid Id, DateTime Day, TimeSpan Start, TimeSpan End, Guid DoctorId);
 }

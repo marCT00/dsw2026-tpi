@@ -126,19 +126,18 @@ public class AvailabilityService : IAvailabilityService
         var doctor = await _persistence.GetById<Doctor>(doctorId)
             ?? throw new EntityNotFoundException(nameof(Doctor));
 
-        var availabilities = await _persistence.GetFiltered<Availability>(
-        a => a.DoctorId == doctorId
-            && (!year.HasValue || a.Year == year.Value)
-            && (!month.HasValue || a.Month == month.Value));
+        var today = DateTime.Now.Date;
 
-        if (availabilities is null || !availabilities.Any())
-            return Enumerable.Empty<AvailabilityModel.DoctorAvailabilityResponse>();
-        return availabilities.Select(a => new AvailabilityModel.DoctorAvailabilityResponse(
-            a.Id,
-            a.DayOfWeek.ToString().ToUpper(),
-            a.StartTime.ToString(@"hh\:mm"), 
-            a.EndTime.ToString(@"hh\:mm")
-           ));
+        var turns = await _persistence.GetFiltered<Turn>(
+            t => t.Availability != null
+            && t.Availability.DoctorId == doctorId
+            && t.State == TurnState.AVAILABLE
+             && t.ScheduledDate >= today
+                && (year == null || t.Availability.Year == year)
+                && (month == null || t.Availability.Month == month));
+
+        return (turns ?? Enumerable.Empty<Turn>())
+            .Select(t => new AvailabilityModel.DoctorAvailabilityResponse( t.Id, t.ScheduledDate, t.StartTime, t.EndTime, doctorId));
     }
 
     private async Task GenerateSlots(Availability availability, int year, int month)

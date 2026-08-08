@@ -204,4 +204,7 @@
   <data name="AVAILABILITY_INVALID_RULEDAY" xml:space="preserve">
     <value>Se debe proporcionar al menos una regla </value>
   </data>
+  <data name="AVAILABILITY_INVALID_TIME" xml:space="preserve">
+    <value>El horario debe estar entre 00:00 y 23:59</value>
+  </data>
 </root>

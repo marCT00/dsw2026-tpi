@@ -85,7 +85,7 @@ public class AppointmentService : IAppointmentService
             ?? throw new EntityNotFoundException(nameof(Patient));
 
         var dates = await _persistence.GetFiltered<Date>(
-        d => d.PatientId == patient.Id && d.Status == DateState.BOOKED);
+        d => d.PatientId == patient.Id && d.Status == DateState.BOOKED,nameof(Turn.Date));
 
         return (dates ?? Enumerable.Empty<Date>())
             .Select(d => ToResponse(d, patient));

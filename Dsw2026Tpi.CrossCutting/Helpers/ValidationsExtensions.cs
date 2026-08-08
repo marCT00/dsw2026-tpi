@@ -30,24 +30,26 @@ public static class ValidationsExtensions
     public static void ValidateDayMonthYear(int month, int year, IEnumerable<DayOfWeek> daysOfWeek)
     {
         if (month < 1 || month > 12)
-            throw new ValidationException(ErrorCodes.AVAILABILITY_INVALID_MONTH,nameof(ErrorCodes.AVAILABILITY_INVALID_MONTH));
+            throw new ValidationException(ErrorCodes.AVAILABILITY_INVALID_MONTH, nameof(ErrorCodes.AVAILABILITY_INVALID_MONTH));
 
         var today = DateTime.Now;
 
         if (year < today.Year || (year == today.Year && month < today.Month))
-            throw new ValidationException(ErrorCodes.AVAILABILITY_INVALID_YEAR,nameof(ErrorCodes.AVAILABILITY_INVALID_YEAR));
+            throw new ValidationException(ErrorCodes.AVAILABILITY_INVALID_YEAR, nameof(ErrorCodes.AVAILABILITY_INVALID_YEAR));
 
-        foreach(var day in daysOfWeek)
+        foreach (var day in daysOfWeek)
         {
             if (!Enum.IsDefined(typeof(DayOfWeek), day))
-                throw new ValidationException(ErrorCodes.AVAILABILITY_INVALID_DAY,nameof(ErrorCodes.AVAILABILITY_INVALID_DAY));
-            if (Enum.Equals(day, DayOfWeek.Sunday)|| Enum.Equals(day, DayOfWeek.Saturday))
-                throw new ValidationException(ErrorCodes.AVAILABILITY_INVALID_WEEKENDDAY,nameof(ErrorCodes.AVAILABILITY_INVALID_WEEKENDDAY));
+                throw new ValidationException(ErrorCodes.AVAILABILITY_INVALID_DAY, nameof(ErrorCodes.AVAILABILITY_INVALID_DAY));
         }
     }
+    public static bool IsValidTimeOfDay(TimeSpan time) =>
+        time >= TimeSpan.Zero
+        && time < TimeSpan.FromHours(24)
+        && time.Ticks % TimeSpan.TicksPerMinute == 0;
 
-    public static bool IsAlignedToGrid(TimeSpan time, int slotDurationMinutes) =>
-        time.Minutes % slotDurationMinutes == 0 && time.Seconds == 0;
+    public static bool IsDivisibleIntoSlots(TimeSpan start, TimeSpan end, int slotDurationMinutes) =>
+    (end - start).Ticks % (slotDurationMinutes * TimeSpan.TicksPerMinute) == 0;
 
     public static void ValidateDayRules(IEnumerable<(TimeSpan Start, TimeSpan End)> days, int slotDurationMinutes)
     {
@@ -56,11 +58,14 @@ public static class ValidationsExtensions
 
         foreach (var day in days)
         {
+            if (!IsValidTimeOfDay(day.Start) || !IsValidTimeOfDay(day.End))
+                throw new ValidationException(ErrorCodes.AVAILABILITY_INVALID_TIME, nameof(ErrorCodes.AVAILABILITY_INVALID_TIME));
+
             if (day.Start >= day.End)
                 throw new ValidationException(ErrorCodes.AVAILABILITY_INVALID_RANGE,nameof(ErrorCodes.AVAILABILITY_INVALID_RANGE));
 
-            if (!IsAlignedToGrid(day.Start, slotDurationMinutes) || !IsAlignedToGrid(day.End, slotDurationMinutes))
-                throw new ValidationException( ErrorCodes.AVAILABILITY_INVALID_DURATION,nameof(ErrorCodes.AVAILABILITY_INVALID_DURATION));
+            if (!IsDivisibleIntoSlots(day.Start, day.End, slotDurationMinutes))
+                throw new ValidationException(ErrorCodes.AVAILABILITY_INVALID_DURATION, nameof(ErrorCodes.AVAILABILITY_INVALID_DURATION));
         }
     }
 

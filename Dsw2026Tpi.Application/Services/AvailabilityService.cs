@@ -137,6 +137,8 @@ public class AvailabilityService : IAvailabilityService
                 && (month == null || t.Availability.Month == month));
 
         return (turns ?? Enumerable.Empty<Turn>())
+            .OrderBy(t => t.ScheduledDate)
+            .ThenBy(t => t.StartTime)
             .Select(t => new AvailabilityModel.DoctorAvailabilityResponse( t.Id, t.ScheduledDate, t.StartTime, t.EndTime, doctorId));
     }
 

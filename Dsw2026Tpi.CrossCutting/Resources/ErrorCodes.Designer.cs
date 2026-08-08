@@ -178,6 +178,15 @@ namespace Dsw2026Tpi.CrossCutting.Resources {
         }
         
         /// <summary>
+        ///   Busca una cadena traducida similar a El horario debe estar entre 00:00 y 23:59.
+        /// </summary>
+        public static string AVAILABILITY_INVALID_TIME {
+            get {
+                return ResourceManager.GetString("AVAILABILITY_INVALID_TIME", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Busca una cadena traducida similar a el día debe ser hábil.
         /// </summary>
         public static string AVAILABILITY_INVALID_WEEKENDDAY {

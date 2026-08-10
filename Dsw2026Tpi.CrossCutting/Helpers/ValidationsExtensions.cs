@@ -1,5 +1,6 @@
 ﻿using Dsw2026Tpi.CrossCutting.Exceptions;
 using Dsw2026Tpi.CrossCutting.Resources;
+using System.Globalization;
 using System.Text.RegularExpressions;
 
 namespace Dsw2026Tpi.CrossCutting.Helpers;
@@ -34,8 +35,11 @@ public static class ValidationsExtensions
 
         var today = DateTime.Now;
 
-        if (year < today.Year || (year == today.Year && month < today.Month))
+        if (year < today.Year)
             throw new ValidationException(ErrorCodes.AVAILABILITY_INVALID_YEAR, nameof(ErrorCodes.AVAILABILITY_INVALID_YEAR));
+
+        if (year == today.Year && month < today.Month)
+            throw new ValidationException(ErrorCodes.AVAILABILITY_INVALID_TODAY_MONTH, nameof(ErrorCodes.AVAILABILITY_INVALID_TODAY_MONTH));
 
         foreach (var day in daysOfWeek)
         {
@@ -84,4 +88,28 @@ public static class ValidationsExtensions
             }
         }
     }
+
+        private static readonly string[] TimeFormats =
+    [@"h\:mm", @"hh\:mm", @"h\:mm\:ss", @"hh\:mm\:ss"];
+
+     public static TimeSpan ParseTimeOfDay(string? value)
+    {
+        if (!TimeSpan.TryParseExact(value, TimeFormats, CultureInfo.InvariantCulture, out var time)
+            || !IsValidTimeOfDay(time))
+            throw new ValidationException(ErrorCodes.AVAILABILITY_INVALID_TIME, nameof(ErrorCodes.AVAILABILITY_INVALID_TIME));
+
+        return time;
+    }
+
+    public static DayOfWeek ParseDayOfWeek(string? value) => value?.Trim().ToLowerInvariant() switch
+    {
+        "domingo" or "sunday" or "0"=> DayOfWeek.Sunday,
+        "lunes" or "monday" or "1"=> DayOfWeek.Monday,
+        "martes" or "tuesday" or "2"=> DayOfWeek.Tuesday,
+        "miercoles" or "miércoles" or "wednesday" or "3"=> DayOfWeek.Wednesday,
+        "jueves" or "thursday" or "4"=> DayOfWeek.Thursday,
+        "viernes" or "friday" or "5"=> DayOfWeek.Friday,
+        "sabado" or "sábado" or "saturday" or "6"=> DayOfWeek.Saturday,
+        _ => throw new ValidationException(ErrorCodes.AVAILABILITY_INVALID_DAY, nameof(ErrorCodes.AVAILABILITY_INVALID_DAY))
+    };
 }

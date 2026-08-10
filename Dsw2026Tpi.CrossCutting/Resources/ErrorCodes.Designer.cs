@@ -133,7 +133,7 @@ namespace Dsw2026Tpi.CrossCutting.Resources {
         }
         
         /// <summary>
-        ///   Busca una cadena traducida similar a El día ingresado no es válido (ingresar de 0 Domingo - 6 Sábado).
+        ///   Busca una cadena traducida similar a El día ingresado no es válido.
         /// </summary>
         public static string AVAILABILITY_INVALID_DAY {
             get {
@@ -183,6 +183,24 @@ namespace Dsw2026Tpi.CrossCutting.Resources {
         public static string AVAILABILITY_INVALID_TIME {
             get {
                 return ResourceManager.GetString("AVAILABILITY_INVALID_TIME", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Busca una cadena traducida similar a Se debe establecer un límite válido.
+        /// </summary>
+        public static string AVAILABILITY_INVALID_TIME_LIMIT {
+            get {
+                return ResourceManager.GetString("AVAILABILITY_INVALID_TIME_LIMIT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Busca una cadena traducida similar a El mes ingresado ya pasó.
+        /// </summary>
+        public static string AVAILABILITY_INVALID_TODAY_MONTH {
+            get {
+                return ResourceManager.GetString("AVAILABILITY_INVALID_TODAY_MONTH", resourceCulture);
             }
         }
         

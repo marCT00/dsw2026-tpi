@@ -28,7 +28,11 @@ public class AvailabilityService : IAvailabilityService
         var doctor = await _persistence.GetById<Doctor>(request.DoctorId)
             ?? throw new EntityNotFoundException(nameof(Doctor));
 
-        var days = request.Days.ToList();
+        var days = (request.Days ?? []).Select(d => (
+             DayOfWeek: ValidationsExtensions.ParseDayOfWeek(d.DayOfWeek),
+             StartTime: ValidationsExtensions.ParseTimeOfDay(d.StartTime),
+             EndTime: ValidationsExtensions.ParseTimeOfDay(d.EndTime)
+          )).ToList();
         ValidationsExtensions.ValidateDayMonthYear(request.Month, request.Year, days.Select(d => d.DayOfWeek));
         
         var dayRulesBasic = days.Select(d => (d.StartTime, d.EndTime));
@@ -66,7 +70,11 @@ public class AvailabilityService : IAvailabilityService
         var doctor = await _persistence.GetById<Doctor>(request.DoctorId)
             ?? throw new EntityNotFoundException(nameof(Doctor));
 
-        var days = request.Days.ToList();
+        var days = (request.Days ?? []).Select(d => (
+             DayOfWeek: ValidationsExtensions.ParseDayOfWeek(d.DayOfWeek),
+             StartTime: ValidationsExtensions.ParseTimeOfDay(d.StartTime),
+             EndTime: ValidationsExtensions.ParseTimeOfDay(d.EndTime)
+          )).ToList();
         ValidationsExtensions.ValidateDayMonthYear(request.Month, request.Year, days.Select(d => d.DayOfWeek));
 
         var dayRulesBasic = days.Select(d => (d.StartTime, d.EndTime));
@@ -186,7 +194,7 @@ public class AvailabilityService : IAvailabilityService
         }
     }
 
-    private async Task ValidateDbOverlap(Guid doctorId, int year, int month,List<AvailabilityModel.DayRuleRequest> newDays,Guid? excludeAvailabilityId)
+    private async Task ValidateDbOverlap(Guid doctorId, int year, int month,List<(DayOfWeek DayOfWeek, TimeSpan StartTime, TimeSpan EndTime)> newDays,Guid? excludeAvailabilityId)
     {
         var existingRules = await _persistence.GetFiltered<Availability>(
             a => a.DoctorId == doctorId 

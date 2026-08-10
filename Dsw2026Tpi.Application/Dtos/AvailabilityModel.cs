@@ -4,7 +4,7 @@ namespace Dsw2026Tpi.Application.Dtos;
 
 public static class AvailabilityModel
 {
-    public record DayRuleRequest(DayOfWeek DayOfWeek, TimeSpan StartTime, TimeSpan EndTime);
+    public record DayRuleRequest(string DayOfWeek, string StartTime, string EndTime);
 
     public record Request(Guid DoctorId, int Year, int Month, IEnumerable<DayRuleRequest> Days);
 

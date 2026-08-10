@@ -33,7 +33,7 @@ public class AvailabilityService : IAvailabilityService
              StartTime: ValidationsExtensions.ParseTimeOfDay(d.StartTime),
              EndTime: ValidationsExtensions.ParseTimeOfDay(d.EndTime)
           )).ToList();
-        ValidationsExtensions.ValidateDayMonthYear(request.Month, request.Year, days.Select(d => d.DayOfWeek));
+        ValidationsExtensions.ValidateDayMonth(request.Month, days.Select(d => d.DayOfWeek));
         
         var dayRulesBasic = days.Select(d => (d.StartTime, d.EndTime));
         ValidationsExtensions.ValidateDayRules(dayRulesBasic, SlotDurationMinutes);
@@ -42,25 +42,25 @@ public class AvailabilityService : IAvailabilityService
         ValidationsExtensions.ValidateInternalOverlap(dayRulesForOverlap);
 
 
-        await ValidateDbOverlap(request.DoctorId, request.Year, request.Month, days, null);
+        await ValidateDbOverlap(request.DoctorId, request.Month, days, null);
 
         var created = new List<AvailabilityModel.Response>();
         foreach (var day in days)
         {
             var availability = new Availability(
-                request.Month, request.Year, day.DayOfWeek,
+                request.Month, DateTime.Now.Year, day.DayOfWeek,
                 day.StartTime, day.EndTime, doctor);
 
             await _persistence.Add(availability);
-            await GenerateSlots(availability, request.Year, request.Month);
+            await GenerateSlots(availability, DateTime.Now.Year, request.Month);
             created.Add(new AvailabilityModel.Response(
-                availability.Id, request.Year, request.Month,
+                availability.Id, DateTime.Now.Year, request.Month,
                 day.DayOfWeek, day.StartTime, day.EndTime, request.DoctorId));
         }
 
         _logger.LogInformation(
             "Disponibilidades creadas para médico {DoctorId}, {Year}/{Month} — {Count} reglas",
-            request.DoctorId, request.Year, request.Month, days.Count);
+            request.DoctorId, DateTime.Now.Year, request.Month, days.Count);
 
         return created;
     }
@@ -75,7 +75,7 @@ public class AvailabilityService : IAvailabilityService
              StartTime: ValidationsExtensions.ParseTimeOfDay(d.StartTime),
              EndTime: ValidationsExtensions.ParseTimeOfDay(d.EndTime)
           )).ToList();
-        ValidationsExtensions.ValidateDayMonthYear(request.Month, request.Year, days.Select(d => d.DayOfWeek));
+        ValidationsExtensions.ValidateDayMonth(request.Month, days.Select(d => d.DayOfWeek));
 
         var dayRulesBasic = days.Select(d => (d.StartTime, d.EndTime));
         ValidationsExtensions.ValidateDayRules(dayRulesBasic, SlotDurationMinutes);
@@ -85,7 +85,7 @@ public class AvailabilityService : IAvailabilityService
 
         var existingAvailabilities = await _persistence.GetFiltered<Availability>(
             a => a.DoctorId == request.DoctorId
-                && a.Year == request.Year
+                && a.Year == DateTime.Now.Year
                 && a.Month == request.Month);
 
         if (existingAvailabilities is not null && existingAvailabilities.Any())
@@ -112,19 +112,19 @@ public class AvailabilityService : IAvailabilityService
         foreach (var day in days)
         {
             var availability = new Availability(
-                request.Month, request.Year, day.DayOfWeek,
+                request.Month, DateTime.Now.Year, day.DayOfWeek,
                 day.StartTime, day.EndTime, doctor);
 
             await _persistence.Add(availability);
-            await GenerateSlots(availability, request.Year, request.Month);
+            await GenerateSlots(availability, DateTime.Now.Year, request.Month);
             created.Add(new AvailabilityModel.Response(
-                availability.Id, request.Year, request.Month,
+                availability.Id, DateTime.Now.Year, request.Month,
                 day.DayOfWeek, day.StartTime, day.EndTime, request.DoctorId));
         }
 
         _logger.LogInformation(
             "Disponibilidades actualizadas para médico {DoctorId}, {Year}/{Month} — {Count} reglas",
-            request.DoctorId, request.Year, request.Month, days.Count);
+            request.DoctorId, DateTime.Now.Year, request.Month, days.Count);
 
         return created;
     }
@@ -141,7 +141,6 @@ public class AvailabilityService : IAvailabilityService
             && t.Availability.DoctorId == doctorId
             && t.State == TurnState.AVAILABLE
              && t.ScheduledDate >= today
-                && (year == null || t.Availability.Year == year)
                 && (month == null || t.Availability.Month == month));
 
         return (turns ?? Enumerable.Empty<Turn>())
@@ -194,11 +193,11 @@ public class AvailabilityService : IAvailabilityService
         }
     }
 
-    private async Task ValidateDbOverlap(Guid doctorId, int year, int month,List<(DayOfWeek DayOfWeek, TimeSpan StartTime, TimeSpan EndTime)> newDays,Guid? excludeAvailabilityId)
+    private async Task ValidateDbOverlap(Guid doctorId, int month,List<(DayOfWeek DayOfWeek, TimeSpan StartTime, TimeSpan EndTime)> newDays,Guid? excludeAvailabilityId)
     {
         var existingRules = await _persistence.GetFiltered<Availability>(
             a => a.DoctorId == doctorId 
-            && a.Year == year && a.Month == month 
+            && a.Year == DateTime.Now.Year && a.Month == month 
             && (!excludeAvailabilityId.HasValue || a.Id != excludeAvailabilityId.Value));
 
         if (existingRules is null) return;

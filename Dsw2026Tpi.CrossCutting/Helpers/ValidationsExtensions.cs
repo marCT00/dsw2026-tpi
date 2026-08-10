@@ -28,17 +28,14 @@ public static class ValidationsExtensions
         }
     }
 
-    public static void ValidateDayMonthYear(int month, int year, IEnumerable<DayOfWeek> daysOfWeek)
+    public static void ValidateDayMonth(int month, IEnumerable<DayOfWeek> daysOfWeek)
     {
+        var today = DateTime.Now;
+
         if (month < 1 || month > 12)
             throw new ValidationException(ErrorCodes.AVAILABILITY_INVALID_MONTH, nameof(ErrorCodes.AVAILABILITY_INVALID_MONTH));
 
-        var today = DateTime.Now;
-
-        if (year < today.Year)
-            throw new ValidationException(ErrorCodes.AVAILABILITY_INVALID_YEAR, nameof(ErrorCodes.AVAILABILITY_INVALID_YEAR));
-
-        if (year == today.Year && month < today.Month)
+        if (month < today.Month)
             throw new ValidationException(ErrorCodes.AVAILABILITY_INVALID_TODAY_MONTH, nameof(ErrorCodes.AVAILABILITY_INVALID_TODAY_MONTH));
 
         foreach (var day in daysOfWeek)
@@ -63,7 +60,7 @@ public static class ValidationsExtensions
         foreach (var day in days)
         {
             if (!IsValidTimeOfDay(day.Start) || !IsValidTimeOfDay(day.End))
-                throw new ValidationException(ErrorCodes.AVAILABILITY_INVALID_TIME, nameof(ErrorCodes.AVAILABILITY_INVALID_TIME));
+                throw new ValidationException(ErrorCodes.AVAILABILITY_INVALID_TIME_LIMIT, nameof(ErrorCodes.AVAILABILITY_INVALID_TIME_LIMIT));
 
             if (day.Start >= day.End)
                 throw new ValidationException(ErrorCodes.AVAILABILITY_INVALID_RANGE,nameof(ErrorCodes.AVAILABILITY_INVALID_RANGE));

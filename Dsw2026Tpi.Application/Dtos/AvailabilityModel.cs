@@ -6,7 +6,7 @@ public static class AvailabilityModel
 {
     public record DayRuleRequest(string DayOfWeek, string StartTime, string EndTime);
 
-    public record Request(Guid DoctorId, int Year, int Month, IEnumerable<DayRuleRequest> Days);
+    public record Request(Guid DoctorId, int Month, IEnumerable<DayRuleRequest> Days);
 
     public record Response(Guid Id, int Year, int Month, DayOfWeek DayOfWeek,
         TimeSpan StartTime, TimeSpan EndTime, Guid DoctorId);

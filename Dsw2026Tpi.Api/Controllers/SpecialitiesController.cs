@@ -7,13 +7,13 @@ using Microsoft.AspNetCore.Mvc;
 namespace Dsw2026Tpi.Api.Controllers;
 
 [ApiController]
-[Route("api/specialties")]
+[Route("api/specialities")]
 [Authorize]
-public class SpecialtiesController : ControllerBase
+public class SpecialitiesController : ControllerBase
 {
     private readonly ISpecialityService _specialityService;
 
-    public SpecialtiesController(ISpecialityService specialityService)
+    public SpecialitiesController(ISpecialityService specialityService)
     {
         _specialityService = specialityService;
     }

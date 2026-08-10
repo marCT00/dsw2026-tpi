@@ -23,7 +23,7 @@ public class AppointmentService : IAppointmentService
 
     public async Task<AppointmentModel.Response> Create(AppointmentModel.Request request)
     {
-        ValidationsExtensions.ValidateStringLength(request.Reason, 3, 500, ErrorCodes.APPOINTMENT_INVALID_REASON, nameof(ErrorCodes.APPOINTMENT_INVALID_REASON));
+        ValidationsExtensions.ValidateStringLength(request.Reason, 5, 500, ErrorCodes.APPOINTMENT_INVALID_REASON, nameof(ErrorCodes.APPOINTMENT_INVALID_REASON));
 
         if (!request.Patient.Dni.IsDniValid())
             throw new ValidationException(ErrorCodes.APPOINTMENT_PATIENT_NOT_FOUND, nameof(ErrorCodes.APPOINTMENT_PATIENT_NOT_FOUND));

@@ -9,7 +9,7 @@ public static class AppointmentModel
 
     public record Response(
         Guid Id,
-        DateTime AppointmentDate,
+        String AppointmentDate,
         DateState Status,
         DateTime? CancellationDate,
         string Reason,
@@ -21,13 +21,14 @@ public static class AppointmentModel
 
     public record SearchResponse(
         Guid Id,
-        DateTime AppointmentDate,
+        String AppointmentDate,
         DateState Status,
         string Reason,
         TimeSpan StartTime,
         TimeSpan EndTime,
         PatientSearchResponse Patient,
         DoctorSearchResponse Doctor);
+
 
     public record DoctorSearchResponse(Guid DoctorId, string Name, SpecialitySearchResponse Speciality);
     public record SpecialitySearchResponse(Guid SpecialityId, string Name);

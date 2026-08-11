@@ -86,8 +86,7 @@ public static class ValidationsExtensions
         }
     }
 
-        private static readonly string[] TimeFormats =
-    [@"h\:mm", @"hh\:mm", @"h\:mm\:ss", @"hh\:mm\:ss"];
+        private static readonly string[] TimeFormats = {@"h\:mm", @"hh\:mm", @"h\:mm\:ss", @"hh\:mm\:ss"};
 
      public static TimeSpan ParseTimeOfDay(string? value)
     {

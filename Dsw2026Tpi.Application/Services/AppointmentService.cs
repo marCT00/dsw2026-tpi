@@ -91,7 +91,7 @@ public class AppointmentService : IAppointmentService
             .Select(d => ToResponse(d, patient));
     }
 
-    public async Task<Pagination<AppointmentModel.SearchResponse>> Search(int pageSize, int pageIndex, string? patientDni, Guid? doctorId, Guid? SpecialityId, DateTime? date)
+    public async Task<Pagination<AppointmentModel.SearchResponse>> Search(int pageSize, int pageIndex, string? patientDni, Guid? doctorId, Guid? SpecialityId, String? date)
     {
         if (!string.IsNullOrWhiteSpace(patientDni) && !patientDni.IsDniValid())
         {
@@ -109,20 +109,26 @@ public class AppointmentService : IAppointmentService
         d => (string.IsNullOrWhiteSpace(patientDni) || (d.Patient != null && d.Patient.Dni == patientDni))
           && (!doctorId.HasValue || (d.Turn != null && d.Turn.Availability != null && d.Turn.Availability.DoctorId == doctorId.Value))
           && (!SpecialityId.HasValue || (d.Turn != null && d.Turn.Availability != null && d.Turn.Availability.Doctor != null && d.Turn.Availability.Doctor.SpecialityId == SpecialityId.Value))
-          && (!date.HasValue || (d.Turn != null && d.Turn.ScheduledDate.Date == date.Value.Date)),
+          && (string.IsNullOrWhiteSpace(date) || (d.Turn != null && d.Turn.ScheduledDate.Date == DateTime.Parse(date).Date)),
         d => d.AppointmentDate,
         includes);
 
         return page.Map(d => new AppointmentModel.SearchResponse(
-            d.Id, d.AppointmentDate, d.Status, d.Motive,
-            d.Turn?.StartTime ?? TimeSpan.Zero, d.Turn?.EndTime ?? TimeSpan.Zero,
-            new AppointmentModel.PatientSearchResponse(d.Patient?.Dni ?? "Sin DNI", d.Patient?.Name ?? "Sin Nombre"),
-            new AppointmentModel.DoctorSearchResponse(
-                d.Turn?.Availability?.DoctorId ?? Guid.Empty,
-                d.Turn?.Availability?.Doctor?.Name ?? "Sin Nombre",
-                new AppointmentModel.SpecialitySearchResponse(
-                    d.Turn?.Availability?.Doctor?.SpecialityId ?? Guid.Empty,
-                    d.Turn?.Availability?.Doctor?.Speciality?.Name ?? "Sin Especialidad"))));
+            d.Id, 
+            d.AppointmentDate.ToString("yyyy-MM-dd"), 
+            d.Status, 
+            d.Motive,
+            d.Turn?.StartTime ?? TimeSpan.Zero, 
+            d.Turn?.EndTime ?? TimeSpan.Zero,
+            new AppointmentModel.PatientSearchResponse(
+                d.Patient?.Dni ?? "Sin DNI", 
+                d.Patient?.Name ?? "Sin Nombre"),
+                new AppointmentModel.DoctorSearchResponse(
+                    d.Turn?.Availability?.DoctorId ?? Guid.Empty,
+                    d.Turn?.Availability?.Doctor?.Name ?? "Sin Nombre",
+                    new AppointmentModel.SpecialitySearchResponse(
+                        d.Turn?.Availability?.Doctor?.SpecialityId ?? Guid.Empty,
+                        d.Turn?.Availability?.Doctor?.Speciality?.Name ?? "Sin Especialidad"))));
 
     }
 
@@ -152,7 +158,7 @@ public class AppointmentService : IAppointmentService
     private static AppointmentModel.Response ToResponse(Date date, Patient patient) =>
         new(
             date.Id,
-            date.AppointmentDate,
+            date.AppointmentDate.ToString("yyyy-MM-dd"),
             date.Status,
             date.CancellationDate,
             date.Motive,
@@ -161,4 +167,5 @@ public class AppointmentService : IAppointmentService
             patient.Dni,
             date.Turn?.StartTime ?? TimeSpan.Zero,
             date.Turn?.EndTime ?? TimeSpan.Zero);
-}
+
+    }

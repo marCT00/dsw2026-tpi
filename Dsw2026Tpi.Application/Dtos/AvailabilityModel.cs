@@ -8,8 +8,8 @@ public static class AvailabilityModel
 
     public record Request(Guid DoctorId, int Month, IEnumerable<DayRuleRequest> Days);
 
-    public record Response(Guid Id, int Year, int Month, DayOfWeek DayOfWeek,
+    public record Response(Guid Id, int Year, int Month, string DayOfWeek,
         TimeSpan StartTime, TimeSpan EndTime, Guid DoctorId);
 
-    public record DoctorAvailabilityResponse(Guid Id, DateTime Day, TimeSpan Start, TimeSpan End, Guid DoctorId);
+    public record DoctorAvailabilityResponse(Guid Id, string Day, TimeSpan Start, TimeSpan End);
 }

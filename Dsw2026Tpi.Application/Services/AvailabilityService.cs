@@ -55,7 +55,7 @@ public class AvailabilityService : IAvailabilityService
             await GenerateSlots(availability, DateTime.Now.Year, request.Month);
             created.Add(new AvailabilityModel.Response(
                 availability.Id, DateTime.Now.Year, request.Month,
-                day.DayOfWeek, day.StartTime, day.EndTime, request.DoctorId));
+                day.DayOfWeek.ToString(), day.StartTime, day.EndTime, request.DoctorId));
         }
 
         _logger.LogInformation(
@@ -119,7 +119,7 @@ public class AvailabilityService : IAvailabilityService
             await GenerateSlots(availability, DateTime.Now.Year, request.Month);
             created.Add(new AvailabilityModel.Response(
                 availability.Id, DateTime.Now.Year, request.Month,
-                day.DayOfWeek, day.StartTime, day.EndTime, request.DoctorId));
+                day.DayOfWeek.ToString(), day.StartTime, day.EndTime, request.DoctorId));
         }
 
         _logger.LogInformation(
@@ -129,7 +129,7 @@ public class AvailabilityService : IAvailabilityService
         return created;
     }
 
-    public async Task<IEnumerable<AvailabilityModel.DoctorAvailabilityResponse>> GetSlotsByDoctor(Guid doctorId, int? year = null, int? month = null)
+    public async Task<IEnumerable<AvailabilityModel.DoctorAvailabilityResponse>> GetSlotsByDoctor(Guid doctorId, int? month = null)
     {
         var doctor = await _persistence.GetById<Doctor>(doctorId)
             ?? throw new EntityNotFoundException(nameof(Doctor));
@@ -146,7 +146,7 @@ public class AvailabilityService : IAvailabilityService
         return (turns ?? Enumerable.Empty<Turn>())
             .OrderBy(t => t.ScheduledDate)
             .ThenBy(t => t.StartTime)
-            .Select(t => new AvailabilityModel.DoctorAvailabilityResponse( t.Id, t.ScheduledDate, t.StartTime, t.EndTime, doctorId));
+            .Select(t => new AvailabilityModel.DoctorAvailabilityResponse( t.Id, t.ScheduledDate.ToString("yyyy-MM-dd"), t.StartTime, t.EndTime));
     }
 
     private async Task GenerateSlots(Availability availability, int year, int month)

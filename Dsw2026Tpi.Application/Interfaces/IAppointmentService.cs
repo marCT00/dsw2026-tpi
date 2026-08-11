@@ -6,7 +6,7 @@ namespace Dsw2026Tpi.Application.Interfaces;
 public interface IAppointmentService
 {
     Task<AppointmentModel.Response> Create(AppointmentModel.Request request);
-    Task<Pagination<AppointmentModel.SearchResponse>> Search(int pageSize, int pageIndex, string? patientDni, Guid? doctorId, Guid? SpecialityId, DateTime? date);
+    Task<Pagination<AppointmentModel.SearchResponse>> Search(int pageSize, int pageIndex, string? patientDni, Guid? doctorId, Guid? SpecialityId, String date);
     Task Cancel(Guid id);
     Task<IEnumerable<AppointmentModel.Response>> GetByPatient(string dni, string? callerUserId, bool isAdmin);
 }

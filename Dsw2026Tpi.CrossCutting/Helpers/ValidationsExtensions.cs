@@ -1,4 +1,4 @@
-﻿using Dsw2026Tpi.CrossCutting.Exceptions;
+using Dsw2026Tpi.CrossCutting.Exceptions;
 using Dsw2026Tpi.CrossCutting.Resources;
 using System.Globalization;
 using System.Text.RegularExpressions;

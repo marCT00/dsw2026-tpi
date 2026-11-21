@@ -1,4 +1,4 @@
-﻿using Dsw2026Tpi.CrossCutting.Exceptions;
+using Dsw2026Tpi.CrossCutting.Exceptions;
 using Dsw2026Tpi.CrossCutting.Models;
 using Dsw2026Tpi.CrossCutting.Resources;
 using System.Net;

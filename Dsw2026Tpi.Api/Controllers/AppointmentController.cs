@@ -1,4 +1,4 @@
-﻿using Dsw2026Tpi.Application.Dtos;
+using Dsw2026Tpi.Application.Dtos;
 using Dsw2026Tpi.Application.Interfaces;
 using Dsw2026Tpi.CrossCutting.Identity;
 using Dsw2026Tpi.Domain.Entities;
@@ -56,7 +56,9 @@ public class AppointmentController : ControllerBase
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> Cancel([FromRoute] Guid id)
     {
-        await _appointmentService.Cancel(id);
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        var isAdmin = User.IsInRole(Roles.Administrator);
+        await _appointmentService.Cancel(id, userId, isAdmin);
         return Ok("ok");
     }
 }

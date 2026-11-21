@@ -7,6 +7,6 @@ public interface IAppointmentService
 {
     Task<AppointmentModel.Response> Create(AppointmentModel.Request request);
     Task<Pagination<AppointmentModel.SearchResponse>> Search(int pageSize, int pageIndex, string? patientDni, Guid? doctorId, Guid? SpecialityId, String date);
-    Task Cancel(Guid id);
+    Task Cancel(Guid id, string? callerUserId, bool isAdmin);
     Task<IEnumerable<AppointmentModel.Response>> GetByPatient(string dni, string? callerUserId, bool isAdmin);
 }

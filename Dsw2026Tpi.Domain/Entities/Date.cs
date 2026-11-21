@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -38,6 +38,13 @@ namespace Dsw2026Tpi.Domain.Entities
         {
             CancellationDate = cancellationDate;
             Status = DateState.CANCELLED;
+
+            if (Turn is not null)
+            {
+                Turn.Release();
+                Turn = null;
+                TurnId = null;
+            }
         }
 
         public void Complete()

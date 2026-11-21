@@ -132,10 +132,13 @@ public class AppointmentService : IAppointmentService
 
     }
 
-    public async Task Cancel(Guid id)
+    public async Task Cancel(Guid id, string? callerUserId, bool isAdmin)
     {
-        var appointment = await _persistence.GetById<Date>(id)
+        var appointment = await _persistence.GetById<Date>(id, nameof(Date.Turn), nameof(Date.Patient))
             ?? throw new EntityNotFoundException(nameof(Date));
+
+        if (!isAdmin && appointment.Patient?.UserId != callerUserId)
+            throw new AuthorizationException();
 
         if (appointment.Status != DateState.BOOKED)
             throw new ConflictException(
@@ -144,12 +147,6 @@ public class AppointmentService : IAppointmentService
 
         appointment.Cancel(DateTime.Now);
         await _persistence.Update(appointment);
-
-        if (appointment.Turn is not null)
-        {
-            appointment.Turn.Release();
-            await _persistence.Update(appointment.Turn);
-        }
 
         _logger.LogInformation(
             "Turno cancelado: AppointmentId={Id}", id);

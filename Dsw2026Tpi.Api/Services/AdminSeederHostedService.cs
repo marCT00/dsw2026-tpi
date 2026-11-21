@@ -1,4 +1,4 @@
-﻿using Dsw2026Tpi.CrossCutting.Identity;
+using Dsw2026Tpi.CrossCutting.Identity;
 using Dsw2026Tpi.Data.Identity;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
@@ -35,10 +35,13 @@ public class AdminSeederHostedService : IHostedService
         var password = adminSection["Password"] ?? throw new InvalidOperationException(
             "Falta configurar AdminSeed:Password en appsettings.json");
 
-        if (!await roleManager.RoleExistsAsync(Roles.Administrator))
+        foreach (var roleName in new[] { Roles.Administrator, Roles.Patient })
         {
-            _logger.LogWarning("El rol {Role} no existe todavía, se omite el seeding del admin", Roles.Administrator);
-            return;
+            if (!await roleManager.RoleExistsAsync(roleName))
+            {
+                await roleManager.CreateAsync(new IdentityRole(roleName));
+                _logger.LogInformation("Rol inicializado automáticamente: {Role}", roleName);
+            }
         }
 
         var existingAdmin = await userManager.FindByEmailAsync(email);

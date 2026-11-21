@@ -49,10 +49,10 @@ public class Program
                 app.UseSwaggerUI();
             }
 
+            app.UseCors();
             app.UseAuthentication();
             app.UseAuthorization();
             app.UseRateLimiter();
-            app.UseCors();
 
             app.MapControllers();
             app.MapHealthChecks("/health-check");

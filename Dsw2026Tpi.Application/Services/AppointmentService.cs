@@ -7,6 +7,7 @@ using Dsw2026Tpi.Domain.Entities;
 using Dsw2026Tpi.Domain.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using System.Globalization;
 
 namespace Dsw2026Tpi.Application.Services;
 
@@ -91,11 +92,20 @@ public class AppointmentService : IAppointmentService
             .Select(d => ToResponse(d, patient));
     }
 
-    public async Task<Pagination<AppointmentModel.SearchResponse>> Search(int pageSize, int pageIndex, string? patientDni, Guid? doctorId, Guid? SpecialityId, String? date)
+    public async Task<Pagination<AppointmentModel.SearchResponse>> Search(int pageSize, int pageIndex, string? patientDni, Guid? doctorId, Guid? SpecialityId, string? date)
     {
         if (!string.IsNullOrWhiteSpace(patientDni) && !patientDni.IsDniValid())
         {
-            throw new ValidationException(ErrorCodes.APPOINTMENT_PATIENT_NOT_FOUND,nameof(ErrorCodes.APPOINTMENT_PATIENT_NOT_FOUND));
+            throw new ValidationException(ErrorCodes.APPOINTMENT_PATIENT_NOT_FOUND, nameof(ErrorCodes.APPOINTMENT_PATIENT_NOT_FOUND));
+        }
+
+        DateTime? parsedDate = null;
+        if (!string.IsNullOrWhiteSpace(date))
+        {
+            if (!DateTime.TryParseExact(date.Trim(), "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out var validDate))
+                throw new ValidationException(ErrorCodes.VALIDATION_ERROR, nameof(ErrorCodes.VALIDATION_ERROR));
+
+            parsedDate = validDate.Date;
         }
 
         string[] includes =
@@ -109,7 +119,7 @@ public class AppointmentService : IAppointmentService
         d => (string.IsNullOrWhiteSpace(patientDni) || (d.Patient != null && d.Patient.Dni == patientDni))
           && (!doctorId.HasValue || (d.Turn != null && d.Turn.Availability != null && d.Turn.Availability.DoctorId == doctorId.Value))
           && (!SpecialityId.HasValue || (d.Turn != null && d.Turn.Availability != null && d.Turn.Availability.Doctor != null && d.Turn.Availability.Doctor.SpecialityId == SpecialityId.Value))
-          && (string.IsNullOrWhiteSpace(date) || (d.Turn != null && d.Turn.ScheduledDate.Date == DateTime.Parse(date).Date)),
+          && (!parsedDate.HasValue || (d.Turn != null && d.Turn.ScheduledDate.Date == parsedDate.Value)),
         d => d.AppointmentDate,
         includes);
 

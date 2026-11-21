@@ -19,7 +19,7 @@ public class DoctorService : IDoctorService
 
     public async Task<Pagination<DoctorModel.Response>> GetAll(int pageSize, int pageIndex, string? name = null)
     {
-        if (name is not null)
+        if (!string.IsNullOrWhiteSpace(name))
             ValidationsExtensions.ValidateStringLength(name, 3, 100, ErrorCodes.DOCTOR_INVALID_NAME, nameof(ErrorCodes.DOCTOR_INVALID_NAME));
 
         var doctors = await _persistence.Paginate<Doctor, string>(

@@ -1,4 +1,5 @@
 using Dsw2026Tpi.CrossCutting.Resources;
+using System.Net;
 
 namespace Dsw2026Tpi.CrossCutting.Exceptions;
 
@@ -7,6 +8,8 @@ namespace Dsw2026Tpi.CrossCutting.Exceptions;
 /// </summary>
 public class AuthorizationException : AppException
 {
+    public override HttpStatusCode StatusCode => HttpStatusCode.Forbidden;
+
     public AuthorizationException()
         : base(ErrorCodes.AUTHORIZATION_FAILED, nameof(ErrorCodes.AUTHORIZATION_FAILED))
     {

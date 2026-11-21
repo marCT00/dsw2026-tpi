@@ -4,6 +4,7 @@ using Dsw2026Tpi.Api.Services;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Serilog;
+using System.Text.Json.Serialization;
 
 namespace Dsw2026Tpi.Api;
 
@@ -31,7 +32,11 @@ public class Program
             builder.Services.AddAppCors(builder.Configuration);
             builder.Services.AddAppDependencies();
             builder.Services.AddAppRateLimiting(builder.Configuration);
-            builder.Services.AddControllers();
+            builder.Services.AddControllers()
+                .AddJsonOptions(options =>
+                {
+                    options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+                });
             builder.Services.AddHealthChecks();
             builder.Services.AddHostedService<AdminSeederHostedService>();
             var app = builder.Build();

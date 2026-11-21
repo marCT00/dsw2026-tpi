@@ -1,4 +1,5 @@
 using Dsw2026Tpi.CrossCutting.Models;
+using System.Net;
 
 namespace Dsw2026Tpi.CrossCutting.Exceptions;
 
@@ -8,6 +9,11 @@ namespace Dsw2026Tpi.CrossCutting.Exceptions;
 /// </summary>
 public abstract class AppException : Exception
 {
+    /// <summary>
+    /// Código de estado HTTP asociado a la excepción (GRASP: Polimorfismo).
+    /// </summary>
+    public abstract HttpStatusCode StatusCode { get; }
+
     /// <summary>
     /// Código de error único para identificar el tipo de error
     /// </summary>

@@ -1,4 +1,5 @@
 using Dsw2026Tpi.CrossCutting.Resources;
+using System.Net;
 
 namespace Dsw2026Tpi.CrossCutting.Exceptions;
 
@@ -8,6 +9,8 @@ namespace Dsw2026Tpi.CrossCutting.Exceptions;
 /// </summary>
 public class ValidationException : AppException
 {
+    public override HttpStatusCode StatusCode => HttpStatusCode.BadRequest;
+
     public ValidationException()
         : base(
             ErrorCodes.VALIDATION_ERROR,

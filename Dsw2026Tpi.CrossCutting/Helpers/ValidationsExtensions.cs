@@ -13,11 +13,11 @@ public static class ValidationsExtensions
         return !string.IsNullOrWhiteSpace(email) &&
             Regex.IsMatch(email, EmailPattern);
     }
-    public static bool IsDniValid(this string? dni)  //CAMBIAR A FUTURO LAS VALIDACIONES DE DNI.
+    public static bool IsDniValid(this string? dni)
     {
         return !string.IsNullOrWhiteSpace(dni) &&
                dni.Length >= 7 &&
-               dni.Length <= 8 &&
+               dni.Length <= 10 &&
                dni.All(char.IsDigit);
     }
     public static void ValidateStringLength(string value, int min, int max, string errorCodeKey, string errorMessage) // M: funcion de validación de longitud, de lo que sea

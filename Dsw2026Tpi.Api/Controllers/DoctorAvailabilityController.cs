@@ -20,10 +20,9 @@ public class DoctorAvailabilityController : ControllerBase
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> GetByDoctor(
         [FromRoute] Guid doctorId,
-        [FromQuery] int? year = null,
         [FromQuery] int? month = null)
     {
-        var result = await _availabilityService.GetSlotsByDoctor(doctorId, year, month);
+        var result = await _availabilityService.GetSlotsByDoctor(doctorId, month);
         return Ok(result);
     }
 }

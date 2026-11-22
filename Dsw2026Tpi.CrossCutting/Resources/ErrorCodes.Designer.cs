@@ -133,6 +133,15 @@ namespace Dsw2026Tpi.CrossCutting.Resources {
         }
         
         /// <summary>
+        ///   Busca una cadena traducida similar a El día ingresado no es válido.
+        /// </summary>
+        public static string AVAILABILITY_INVALID_DAY {
+            get {
+                return ResourceManager.GetString("AVAILABILITY_INVALID_DAY", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Busca una cadena traducida similar a El rango horario debe ser múltiplo de 30 minutos y estar alineado a la grilla (:00 o :30).
         /// </summary>
         public static string AVAILABILITY_INVALID_DURATION {
@@ -156,6 +165,51 @@ namespace Dsw2026Tpi.CrossCutting.Resources {
         public static string AVAILABILITY_INVALID_RANGE {
             get {
                 return ResourceManager.GetString("AVAILABILITY_INVALID_RANGE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Busca una cadena traducida similar a Se debe proporcionar al menos una regla .
+        /// </summary>
+        public static string AVAILABILITY_INVALID_RULEDAY {
+            get {
+                return ResourceManager.GetString("AVAILABILITY_INVALID_RULEDAY", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Busca una cadena traducida similar a El horario debe estar entre 00:00 y 23:59.
+        /// </summary>
+        public static string AVAILABILITY_INVALID_TIME {
+            get {
+                return ResourceManager.GetString("AVAILABILITY_INVALID_TIME", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Busca una cadena traducida similar a Se debe establecer un límite válido.
+        /// </summary>
+        public static string AVAILABILITY_INVALID_TIME_LIMIT {
+            get {
+                return ResourceManager.GetString("AVAILABILITY_INVALID_TIME_LIMIT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Busca una cadena traducida similar a El mes ingresado ya pasó.
+        /// </summary>
+        public static string AVAILABILITY_INVALID_TODAY_MONTH {
+            get {
+                return ResourceManager.GetString("AVAILABILITY_INVALID_TODAY_MONTH", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Busca una cadena traducida similar a el día debe ser hábil.
+        /// </summary>
+        public static string AVAILABILITY_INVALID_WEEKENDDAY {
+            get {
+                return ResourceManager.GetString("AVAILABILITY_INVALID_WEEKENDDAY", resourceCulture);
             }
         }
         

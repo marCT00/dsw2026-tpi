@@ -1,5 +1,6 @@
-﻿using Dsw2026Tpi.CrossCutting.Exceptions;
+using Dsw2026Tpi.CrossCutting.Exceptions;
 using Dsw2026Tpi.CrossCutting.Resources;
+using System.Globalization;
 using System.Text.RegularExpressions;
 
 namespace Dsw2026Tpi.CrossCutting.Helpers;
@@ -12,7 +13,7 @@ public static class ValidationsExtensions
         return !string.IsNullOrWhiteSpace(email) &&
             Regex.IsMatch(email, EmailPattern);
     }
-    public static bool IsDniValid(this string? dni)  //CAMBIAR A FUTURO LAS VALIDACIONES DE DNI.
+    public static bool IsDniValid(this string? dni)
     {
         return !string.IsNullOrWhiteSpace(dni) &&
                dni.Length >= 7 &&
@@ -27,32 +28,45 @@ public static class ValidationsExtensions
         }
     }
 
-    public static void ValidateMonthYear(int month, int year)
+    public static void ValidateDayMonth(int month, IEnumerable<DayOfWeek> daysOfWeek)
     {
+        var today = DateTime.Now;
+
         if (month < 1 || month > 12)
-            throw new ValidationException(ErrorCodes.AVAILABILITY_INVALID_MONTH,nameof(ErrorCodes.AVAILABILITY_INVALID_MONTH));
+            throw new ValidationException(ErrorCodes.AVAILABILITY_INVALID_MONTH, nameof(ErrorCodes.AVAILABILITY_INVALID_MONTH));
 
-        var today = DateTime.UtcNow;
+        if (month < today.Month)
+            throw new ValidationException(ErrorCodes.AVAILABILITY_INVALID_TODAY_MONTH, nameof(ErrorCodes.AVAILABILITY_INVALID_TODAY_MONTH));
 
-        if (year < today.Year || (year == today.Year && month < today.Month))
-            throw new ValidationException(ErrorCodes.AVAILABILITY_INVALID_YEAR,nameof(ErrorCodes.AVAILABILITY_INVALID_YEAR));
+        foreach (var day in daysOfWeek)
+        {
+            if (!Enum.IsDefined(typeof(DayOfWeek), day))
+                throw new ValidationException(ErrorCodes.AVAILABILITY_INVALID_DAY, nameof(ErrorCodes.AVAILABILITY_INVALID_DAY));
+        }
     }
+    public static bool IsValidTimeOfDay(TimeSpan time) =>
+        time >= TimeSpan.Zero
+        && time < TimeSpan.FromHours(24)
+        && time.Ticks % TimeSpan.TicksPerMinute == 0;
 
-    public static bool IsAlignedToGrid(TimeSpan time, int slotDurationMinutes) =>
-        time.Minutes % slotDurationMinutes == 0 && time.Seconds == 0;
+    public static bool IsDivisibleIntoSlots(TimeSpan start, TimeSpan end, int slotDurationMinutes) =>
+    (end - start).Ticks % (slotDurationMinutes * TimeSpan.TicksPerMinute) == 0;
 
     public static void ValidateDayRules(IEnumerable<(TimeSpan Start, TimeSpan End)> days, int slotDurationMinutes)
     {
         if (!days.Any())
-            throw new ValidationException(ErrorCodes.VALIDATION_ERROR,"Se debe proporcionar al menos una regla de día");
+            throw new ValidationException(ErrorCodes.AVAILABILITY_INVALID_RULEDAY,nameof(ErrorCodes.AVAILABILITY_INVALID_RULEDAY));
 
         foreach (var day in days)
         {
+            if (!IsValidTimeOfDay(day.Start) || !IsValidTimeOfDay(day.End))
+                throw new ValidationException(ErrorCodes.AVAILABILITY_INVALID_TIME_LIMIT, nameof(ErrorCodes.AVAILABILITY_INVALID_TIME_LIMIT));
+
             if (day.Start >= day.End)
                 throw new ValidationException(ErrorCodes.AVAILABILITY_INVALID_RANGE,nameof(ErrorCodes.AVAILABILITY_INVALID_RANGE));
 
-            if (!IsAlignedToGrid(day.Start, slotDurationMinutes) || !IsAlignedToGrid(day.End, slotDurationMinutes))
-                throw new ValidationException( ErrorCodes.AVAILABILITY_INVALID_DURATION,nameof(ErrorCodes.AVAILABILITY_INVALID_DURATION));
+            if (!IsDivisibleIntoSlots(day.Start, day.End, slotDurationMinutes))
+                throw new ValidationException(ErrorCodes.AVAILABILITY_INVALID_DURATION, nameof(ErrorCodes.AVAILABILITY_INVALID_DURATION));
         }
     }
 
@@ -71,4 +85,27 @@ public static class ValidationsExtensions
             }
         }
     }
+
+        private static readonly string[] TimeFormats = {@"h\:mm", @"hh\:mm", @"h\:mm\:ss", @"hh\:mm\:ss"};
+
+     public static TimeSpan ParseTimeOfDay(string? value)
+    {
+        if (!TimeSpan.TryParseExact(value, TimeFormats, CultureInfo.InvariantCulture, out var time)
+            || !IsValidTimeOfDay(time))
+            throw new ValidationException(ErrorCodes.AVAILABILITY_INVALID_TIME, nameof(ErrorCodes.AVAILABILITY_INVALID_TIME));
+
+        return time;
+    }
+
+    public static DayOfWeek ParseDayOfWeek(string? value) => value?.Trim().ToLowerInvariant() switch
+    {
+        "domingo" or "sunday" or "0"=> DayOfWeek.Sunday,
+        "lunes" or "monday" or "1"=> DayOfWeek.Monday,
+        "martes" or "tuesday" or "2"=> DayOfWeek.Tuesday,
+        "miercoles" or "miércoles" or "wednesday" or "3"=> DayOfWeek.Wednesday,
+        "jueves" or "thursday" or "4"=> DayOfWeek.Thursday,
+        "viernes" or "friday" or "5"=> DayOfWeek.Friday,
+        "sabado" or "sábado" or "saturday" or "6"=> DayOfWeek.Saturday,
+        _ => throw new ValidationException(ErrorCodes.AVAILABILITY_INVALID_DAY, nameof(ErrorCodes.AVAILABILITY_INVALID_DAY))
+    };
 }

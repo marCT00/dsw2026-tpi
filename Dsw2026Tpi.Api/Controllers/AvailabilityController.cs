@@ -1,4 +1,4 @@
-﻿using Dsw2026Tpi.Application.Dtos;
+using Dsw2026Tpi.Application.Dtos;
 using Dsw2026Tpi.Application.Interfaces;
 using Dsw2026Tpi.CrossCutting.Identity;
 using Microsoft.AspNetCore.Authorization;
@@ -23,7 +23,7 @@ public class AvailabilityController : ControllerBase
     public async Task<IActionResult> Create([FromBody] AvailabilityModel.Request request)
     {
         var result = await _availabilityService.Create(request);
-        return CreatedAtAction(nameof(Create), result);
+        return StatusCode(StatusCodes.Status201Created, result);
     }
 
     [HttpPut]

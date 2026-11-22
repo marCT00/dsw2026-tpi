@@ -1,3 +1,5 @@
+using System.Net;
+
 namespace Dsw2026Tpi.CrossCutting.Exceptions;
 
 /// <summary>
@@ -5,6 +7,8 @@ namespace Dsw2026Tpi.CrossCutting.Exceptions;
 /// </summary>
 public class BusinessRuleException : AppException
 {
+    public override HttpStatusCode StatusCode => HttpStatusCode.UnprocessableEntity;
+
     public BusinessRuleException(string message, string errorCode)
         : base(message, errorCode)
     {

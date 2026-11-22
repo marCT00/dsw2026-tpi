@@ -1,10 +1,12 @@
-﻿using Dsw2026Tpi.Application.Dtos;
+using Dsw2026Tpi.Application.Dtos;
 using Dsw2026Tpi.Application.Interfaces;
 using Dsw2026Tpi.CrossCutting.Identity;
+using Dsw2026Tpi.Domain.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
 using System.Security.Claims;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Dsw2026Tpi.Api.Controllers;
 
@@ -43,9 +45,9 @@ public class AppointmentController : ControllerBase
     [HttpGet("search")]
     [Authorize(Policy = Policies.AdminPolicy)]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public async Task<IActionResult> Search([FromQuery] int pageSize = 10, [FromQuery] int pageIndex = 1,[FromQuery] string? patientDni = null, [FromQuery] Guid? doctorId = null,[FromQuery] Guid? specialtyId = null,[FromQuery] DateTime? date = null)
+    public async Task<IActionResult> Search([FromQuery] int pageSize = 10, [FromQuery] int pageIndex = 1,[FromQuery] string? dni = null, [FromQuery] Guid? doctorId = null,[FromQuery] Guid? SpecialityId = null,[FromQuery] string? date = null)
     {
-        var result = await _appointmentService.Search(pageSize, pageIndex, patientDni, doctorId, specialtyId, date);
+        var result = await _appointmentService.Search(pageSize, pageIndex, dni, doctorId, SpecialityId, date);
         return Ok(result);
     }
 
@@ -54,15 +56,9 @@ public class AppointmentController : ControllerBase
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> Cancel([FromRoute] Guid id)
     {
-        await _appointmentService.Cancel(id);
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        var isAdmin = User.IsInRole(Roles.Administrator);
+        await _appointmentService.Cancel(id, userId, isAdmin);
         return Ok("ok");
-    }
-
-    [HttpGet]
-    [Authorize(Policy = Policies.AdminPolicy)]
-    public async Task<IActionResult> GetByDate([FromQuery] DateTime date)
-    {
-        var result = await _appointmentService.Search(pageSize: 100, pageIndex: 1, patientDni: null, doctorId: null, specialtyId: null, date: date);
-        return Ok(result);
     }
 }

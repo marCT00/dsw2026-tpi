@@ -38,13 +38,7 @@ namespace Dsw2026Tpi.Domain.Entities
         {
             CancellationDate = cancellationDate;
             Status = DateState.CANCELLED;
-
-            if (Turn is not null)
-            {
-                Turn.Release();
-                Turn = null;
-                TurnId = null;
-            }
+            Turn?.Release();
         }
 
         public void Complete()

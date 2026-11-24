@@ -1,4 +1,4 @@
-﻿using Dsw2026Tpi.Api.Services;
+using Dsw2026Tpi.Api.Services;
 using Dsw2026Tpi.Application.Interfaces;
 using Dsw2026Tpi.Application.Services;
 using Dsw2026Tpi.Data;
@@ -18,6 +18,7 @@ public static class DependencyInjectionConfigurationExtensions
         services.AddScoped<ISpecialityService, SpecialityService>();
         services.AddScoped<IAvailabilityService, AvailabilityService>();
         services.AddScoped<IAppointmentService, AppointmentService>();
+        services.AddScoped<IDashboardService, DashboardService>();
         return services;
     }
 }

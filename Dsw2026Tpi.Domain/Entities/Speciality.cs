@@ -1,4 +1,4 @@
-﻿namespace Dsw2026Tpi.Domain.Entities;
+namespace Dsw2026Tpi.Domain.Entities;
 
 public class Speciality : EntityBase
 {
@@ -29,5 +29,10 @@ public class Speciality : EntityBase
     public void Deactivate()
     {
         Deleted = true;
+    }
+
+    public void Activate()
+    {
+        Deleted = false;
     }
 }

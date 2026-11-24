@@ -35,7 +35,7 @@ public class AppointmentService : IAppointmentService
         var patient = await _persistence.First<Patient>(p => p.Dni == request.Patient.Dni)
             ?? throw new EntityNotFoundException(nameof(Patient));
 
-        var turn = await _persistence.GetById<Turn>(request.AvailabilitySlotId, nameof(Turn.Availability))
+        var turn = await _persistence.GetById<Turn>(request.AvailabilitySlotId, "Availability.Doctor.Speciality")
             ?? throw new EntityNotFoundException(nameof(Turn));
 
         if (turn.Availability?.DoctorId != request.DoctorId)
@@ -73,6 +73,8 @@ public class AppointmentService : IAppointmentService
 
     public async Task<IEnumerable<AppointmentModel.Response>> GetByPatient(string dni, string? callerUserId, bool isAdmin)
     {
+        await CompleteExpiredAppointments();
+
         if (!isAdmin)
         {
             var caller = await _persistence.First<Patient>(p => p.UserId == callerUserId)
@@ -86,14 +88,16 @@ public class AppointmentService : IAppointmentService
             ?? throw new EntityNotFoundException(nameof(Patient));
 
         var dates = await _persistence.GetFiltered<Date>(
-        d => d.PatientId == patient.Id && d.Status == DateState.BOOKED, nameof(Date.Turn));
+        d => d.PatientId == patient.Id && d.Status == DateState.BOOKED, "Turn.Availability.Doctor.Speciality");
 
         return (dates ?? Enumerable.Empty<Date>())
             .Select(d => ToResponse(d, patient));
     }
 
-    public async Task<Pagination<AppointmentModel.SearchResponse>> Search(int pageSize, int pageIndex, string? patientDni, Guid? doctorId, Guid? SpecialityId, string? date)
+    public async Task<Pagination<AppointmentModel.SearchResponse>> Search(int pageSize, int pageIndex, string? patientDni, Guid? doctorId, Guid? SpecialityId, string? date, DateState? status = null)
     {
+        await CompleteExpiredAppointments();
+
         if (!string.IsNullOrWhiteSpace(patientDni) && !patientDni.IsDniValid())
         {
             throw new ValidationException(ErrorCodes.APPOINTMENT_PATIENT_NOT_FOUND, nameof(ErrorCodes.APPOINTMENT_PATIENT_NOT_FOUND));
@@ -119,7 +123,8 @@ public class AppointmentService : IAppointmentService
         d => (string.IsNullOrWhiteSpace(patientDni) || (d.Patient != null && d.Patient.Dni == patientDni))
           && (!doctorId.HasValue || (d.Turn != null && d.Turn.Availability != null && d.Turn.Availability.DoctorId == doctorId.Value))
           && (!SpecialityId.HasValue || (d.Turn != null && d.Turn.Availability != null && d.Turn.Availability.Doctor != null && d.Turn.Availability.Doctor.SpecialityId == SpecialityId.Value))
-          && (!parsedDate.HasValue || (d.Turn != null && d.Turn.ScheduledDate.Date == parsedDate.Value)),
+          && (!parsedDate.HasValue || (d.Turn != null && d.Turn.ScheduledDate.Date == parsedDate.Value))
+          && (!status.HasValue || d.Status == status.Value),
         d => d.AppointmentDate,
         includes);
 
@@ -144,6 +149,8 @@ public class AppointmentService : IAppointmentService
 
     public async Task Cancel(Guid id, string? callerUserId, bool isAdmin)
     {
+        await CompleteExpiredAppointments();
+
         var appointment = await _persistence.GetById<Date>(id, nameof(Date.Turn), nameof(Date.Patient))
             ?? throw new EntityNotFoundException(nameof(Date));
 
@@ -162,8 +169,113 @@ public class AppointmentService : IAppointmentService
             "Turno cancelado: AppointmentId={Id}", id);
     }
 
-    private static AppointmentModel.Response ToResponse(Date date, Patient patient) =>
-        new(
+    public async Task<AppointmentModel.Response> UpdateStatus(Guid id, AppointmentModel.UpdateStatusRequest request)
+    {
+        if (request is null || (request.Status != DateState.ATTENDED && request.Status != DateState.NO_SHOW))
+        {
+            throw new ValidationException(
+                ErrorCodes.APPOINTMENT_INVALID_STATUS_TRANSITION,
+                nameof(ErrorCodes.APPOINTMENT_INVALID_STATUS_TRANSITION));
+        }
+
+        var appointment = await _persistence.GetById<Date>(
+                id,
+                nameof(Date.Patient),
+                "Turn.Availability.Doctor.Speciality")
+            ?? throw new EntityNotFoundException(nameof(Date));
+
+        if (appointment.Status != DateState.BOOKED)
+        {
+            throw new ConflictException(
+                nameof(ErrorCodes.APPOINTMENT_STATUS_CHANGE_NOT_ALLOWED),
+                ErrorCodes.APPOINTMENT_STATUS_CHANGE_NOT_ALLOWED);
+        }
+
+        if (request.Status == DateState.ATTENDED)
+        {
+            appointment.Complete();
+        }
+        else
+        {
+            appointment.NoShow();
+        }
+
+        await _persistence.Update(appointment);
+
+        _logger.LogInformation(
+            "Estado de turno actualizado: AppointmentId={Id}, NewStatus={Status}",
+            id, appointment.Status);
+
+        return ToResponse(appointment, appointment.Patient);
+    }
+
+    public async Task<int> CompleteExpiredAppointments()
+    {
+        var now = DateTime.Now;
+        var tomorrow = now.Date.AddDays(1);
+
+        var candidates = await _persistence.GetFiltered<Date>(
+            d => d.Status == DateState.BOOKED && d.AppointmentDate < tomorrow,
+            nameof(Date.Turn));
+
+        var expired = (candidates ?? Enumerable.Empty<Date>())
+            .Where(d => HasAppointmentEnded(d, now))
+            .ToList();
+
+        if (expired.Count == 0)
+            return 0;
+
+        var completedCount = 0;
+        foreach (var appointment in expired)
+        {
+            try
+            {
+                appointment.Complete();
+                await _persistence.Update(appointment);
+                completedCount++;
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                _logger.LogWarning(
+                    "Conflicto de concurrencia al completar automáticamente el turno {AppointmentId}",
+                    appointment.Id);
+            }
+        }
+
+        if (completedCount > 0)
+        {
+            _logger.LogInformation(
+                "Se marcaron automáticamente como ATTENDED {Count} turno(s) cuyo horario de finalización ya pasó",
+                completedCount);
+        }
+
+        return completedCount;
+    }
+
+    private static bool HasAppointmentEnded(Date appointment, DateTime now)
+    {
+        if (appointment.Turn is not null)
+        {
+            var endDateTime = appointment.Turn.ScheduledDate.Date + appointment.Turn.EndTime;
+            return endDateTime <= now;
+        }
+
+        return appointment.AppointmentDate.Date < now.Date;
+    }
+
+    private static AppointmentModel.Response ToResponse(Date date, Patient? patient)
+    {
+        var doctor = date.Turn?.Availability?.Doctor;
+        var doctorDto = doctor is not null
+            ? new AppointmentModel.DoctorSearchResponse(
+                doctor.Id,
+                doctor.Name,
+                new AppointmentModel.SpecialitySearchResponse(
+                    doctor.SpecialityId ?? Guid.Empty,
+                    doctor.Speciality?.Name ?? "Sin Especialidad"))
+            : null;
+
+        return new(
             date.Id,
             date.AppointmentDate.ToString("yyyy-MM-dd"),
             date.Status,
@@ -171,8 +283,10 @@ public class AppointmentService : IAppointmentService
             date.Motive,
             date.TurnId ?? Guid.Empty,
             date.PatientId ?? Guid.Empty,
-            patient.Dni,
+            patient?.Dni,
             date.Turn?.StartTime ?? TimeSpan.Zero,
-            date.Turn?.EndTime ?? TimeSpan.Zero);
+            date.Turn?.EndTime ?? TimeSpan.Zero,
+            doctorDto);
+    }
 
     }

@@ -17,14 +17,15 @@ public class SpecialityService : ISpecialityService
         _persistence = persistence;
     }
 
-    public async Task<Pagination<SpecialityModel.Response>> GetAll(int pageSize, int pageIndex, string? name = null)
+    public async Task<Pagination<SpecialityModel.Response>> GetAll(int pageSize, int pageIndex, string? name = null, bool? isActive = null)
     {
         if (!string.IsNullOrWhiteSpace(name))
             ValidationsExtensions.ValidateStringLength(name, 3, 100, ErrorCodes.SPECIALITY_INVALID_NAME, nameof(ErrorCodes.SPECIALITY_INVALID_NAME));
         var specialities = await _persistence.Paginate<Speciality, string>(
             pageSize,
             pageIndex,
-            s => !s.Deleted && (string.IsNullOrWhiteSpace(name) || s.Name.Contains(name)),
+            s => (!isActive.HasValue || s.Deleted != isActive.Value)
+                && (string.IsNullOrWhiteSpace(name) || s.Name.Contains(name)),
             s => s.Name);
 
         return specialities.Map(ToResponse);
@@ -42,11 +43,14 @@ public class SpecialityService : ISpecialityService
     {
         Validate(request);
 
-        var exists = await _persistence.First<Speciality>(s => s.Name == request.Name && !s.Deleted);
+        var exists = await _persistence.First<Speciality>(s => s.Name == request.Name);
         if (exists is not null)
             throw new ConflictException(nameof(ErrorCodes.SPECIALITY_NAME_CONFLICT), ErrorCodes.SPECIALITY_NAME_CONFLICT);
 
         var speciality = new Speciality(request.Name, request.Description);
+        if (!request.IsActive)
+            speciality.Deactivate();
+
         await _persistence.Add(speciality);
 
         return ToResponse(speciality);
@@ -59,11 +63,16 @@ public class SpecialityService : ISpecialityService
         var speciality = await _persistence.GetById<Speciality>(id)
             ?? throw new EntityNotFoundException(nameof(Speciality));
 
-        var duplicate = await _persistence.First<Speciality>(s => s.Name == request.Name && !s.Deleted && s.Id != id);
+        var duplicate = await _persistence.First<Speciality>(s => s.Name == request.Name && s.Id != id);
         if (duplicate is not null)
             throw new ConflictException(nameof(ErrorCodes.SPECIALITY_NAME_CONFLICT), ErrorCodes.SPECIALITY_NAME_CONFLICT);
 
         speciality.UpdateDetails(request.Name, request.Description);
+        if (request.IsActive)
+            speciality.Activate();
+        else
+            speciality.Deactivate();
+
         await _persistence.Update(speciality);
 
         return ToResponse(speciality);

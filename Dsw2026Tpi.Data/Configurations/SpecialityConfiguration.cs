@@ -1,4 +1,4 @@
-﻿using Dsw2026Tpi.Domain.Entities;
+using Dsw2026Tpi.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -25,7 +25,5 @@ public class SpecialityConfiguration : IEntityTypeConfiguration<Speciality>
 
         builder.Property(s => s.Deleted)
             .HasDefaultValue(false);
-
-        builder.HasQueryFilter(s => !s.Deleted);
     }
 }

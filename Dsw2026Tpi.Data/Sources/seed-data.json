@@ -1,0 +1,483 @@
+{
+  "specialities": [
+    {
+      "name": "Cardiología",
+      "description": "Estudio y tratamiento de trastornos del corazón y del sistema circulatorio."
+    },
+    {
+      "name": "Neurología",
+      "description": "Diagnóstico y tratamiento de todas las categorías de afecciones cerebrales."
+    },
+    {
+      "name": "Dermatología",
+      "description": "Atención integral de enfermedades de la piel, uñas y cabello."
+    },
+    {
+      "name": "Pediatría",
+      "description": "Cuidado médico de lactantes, niños y adolescentes."
+    },
+    {
+      "name": "Ginecología",
+      "description": "Atención integral de la salud reproductiva y controles ginecológicos."
+    },
+    {
+      "name": "Traumatología",
+      "description": "Diagnóstico y tratamiento de lesiones óseas, musculares y articulares."
+    },
+    {
+      "name": "Medicina General",
+      "description": "Atención clínica primaria, controles preventivos y derivaciones médicas."
+    },
+    {
+      "name": "Oftalmología",
+      "description": "Evaluación, diagnóstico y tratamiento de patologías de la visión."
+    },
+    {
+      "name": "Otorrinolaringología",
+      "description": "Cuidado médico y quirúrgico de oído, nariz, garganta y vías respiratorias."
+    },
+    {
+      "name": "Psiquiatría",
+      "description": "Evaluación, diagnóstico y tratamiento integral de la salud mental."
+    },
+    {
+      "name": "Endocrinología",
+      "description": "Manejo de trastornos hormonales, tiroides, metabolismo y diabetes."
+    },
+    {
+      "name": "Gastroenterología",
+      "description": "Diagnóstico y tratamiento de enfermedades del aparato digestivo."
+    },
+    {
+      "name": "Neumonología",
+      "description": "Prevención y tratamiento de enfermedades respiratorias y pulmonares."
+    },
+    {
+      "name": "Nefrología",
+      "description": "Estudio, prevención y tratamiento de patologías renales crónicas y agudas."
+    },
+    {
+      "name": "Oncología",
+      "description": "Seguimiento clínico y terapéutico integral de pacientes oncológicos."
+    },
+    {
+      "name": "Urología",
+      "description": "Diagnóstico y tratamiento de afecciones del aparato urinario."
+    },
+    {
+      "name": "Reumatología",
+      "description": "Atención de enfermedades autoinmunes, artritis y dolores articulares."
+    },
+    {
+      "name": "Hematología",
+      "description": "Diagnóstico y seguimiento de trastornos de la sangre y coagulación."
+    },
+    {
+      "name": "Infectología",
+      "description": "Prevención, diagnóstico y tratamiento de enfermedades infecciosas."
+    },
+    {
+      "name": "Nutrición Clínica",
+      "description": "Evaluación nutricional y planes alimentarios terapéuticos personalizados."
+    }
+  ],
+  "doctors": [
+    {
+      "name": "Dr. Alejandro Rivera",
+      "licenseNumber": "MED-4920",
+      "specialityName": "Cardiología"
+    },
+    {
+      "name": "Dra. Elena Martínez",
+      "licenseNumber": "MED-2104",
+      "specialityName": "Pediatría"
+    },
+    {
+      "name": "Dr. Marcos Torres",
+      "licenseNumber": "MED-8831",
+      "specialityName": "Neurología"
+    },
+    {
+      "name": "Dra. Lucía Soria",
+      "licenseNumber": "MED-1192",
+      "specialityName": "Ginecología"
+    },
+    {
+      "name": "Dra. María González",
+      "licenseNumber": "MED-3310",
+      "specialityName": "Dermatología"
+    },
+    {
+      "name": "Dr. Lucas Fernández",
+      "licenseNumber": "MED-3415",
+      "specialityName": "Traumatología"
+    },
+    {
+      "name": "Dr. James Wilson",
+      "licenseNumber": "MED-4102",
+      "specialityName": "Medicina General"
+    },
+    {
+      "name": "Dra. Sofía Herrera",
+      "licenseNumber": "MED-4208",
+      "specialityName": "Oftalmología"
+    },
+    {
+      "name": "Dr. Robert Chen",
+      "licenseNumber": "MED-4319",
+      "specialityName": "Otorrinolaringología"
+    },
+    {
+      "name": "Dra. Valentina Paz",
+      "licenseNumber": "MED-4425",
+      "specialityName": "Psiquiatría"
+    },
+    {
+      "name": "Dr. Nicolás Molina",
+      "licenseNumber": "MED-4531",
+      "specialityName": "Endocrinología"
+    },
+    {
+      "name": "Dra. Carolina Vega",
+      "licenseNumber": "MED-4642",
+      "specialityName": "Gastroenterología"
+    },
+    {
+      "name": "Dr. Santiago Morales",
+      "licenseNumber": "MED-4758",
+      "specialityName": "Neumonología"
+    },
+    {
+      "name": "Dra. Paula Benítez",
+      "licenseNumber": "MED-4863",
+      "specialityName": "Nefrología"
+    },
+    {
+      "name": "Dr. Federico Castro",
+      "licenseNumber": "MED-4974",
+      "specialityName": "Oncología"
+    },
+    {
+      "name": "Dr. Diego Navarro",
+      "licenseNumber": "MED-5081",
+      "specialityName": "Urología"
+    },
+    {
+      "name": "Dra. Gabriela Ortiz",
+      "licenseNumber": "MED-5190",
+      "specialityName": "Reumatología"
+    },
+    {
+      "name": "Dr. Andrés Romero",
+      "licenseNumber": "MED-5295",
+      "specialityName": "Hematología"
+    },
+    {
+      "name": "Dra. Florencia Silva",
+      "licenseNumber": "MED-5312",
+      "specialityName": "Infectología"
+    },
+    {
+      "name": "Lic. Julieta Medina",
+      "licenseNumber": "MED-5428",
+      "specialityName": "Nutrición Clínica"
+    }
+  ],
+  "availabilities": [
+    {
+      "doctorLicense": "MED-4920",
+      "month": 11,
+      "days": [
+        { "dayOfWeek": "Monday", "startTime": "08:00", "endTime": "11:00" },
+        { "dayOfWeek": "Wednesday", "startTime": "08:00", "endTime": "11:00" },
+        { "dayOfWeek": "Friday", "startTime": "08:00", "endTime": "11:00" }
+      ]
+    },
+    {
+      "doctorLicense": "MED-2104",
+      "month": 11,
+      "days": [
+        { "dayOfWeek": "Tuesday", "startTime": "09:00", "endTime": "12:00" },
+        { "dayOfWeek": "Thursday", "startTime": "09:00", "endTime": "12:00" }
+      ]
+    },
+    {
+      "doctorLicense": "MED-8831",
+      "month": 11,
+      "days": [
+        { "dayOfWeek": "Monday", "startTime": "14:00", "endTime": "17:00" },
+        { "dayOfWeek": "Wednesday", "startTime": "14:00", "endTime": "17:00" }
+      ]
+    },
+    {
+      "doctorLicense": "MED-1192",
+      "month": 11,
+      "days": [
+        { "dayOfWeek": "Tuesday", "startTime": "10:00", "endTime": "13:00" },
+        { "dayOfWeek": "Friday", "startTime": "10:00", "endTime": "13:00" }
+      ]
+    },
+    {
+      "doctorLicense": "MED-3310",
+      "month": 11,
+      "days": [
+        { "dayOfWeek": "Monday", "startTime": "09:00", "endTime": "12:00" },
+        { "dayOfWeek": "Thursday", "startTime": "14:00", "endTime": "17:00" }
+      ]
+    },
+    {
+      "doctorLicense": "MED-3415",
+      "month": 11,
+      "days": [
+        { "dayOfWeek": "Tuesday", "startTime": "14:00", "endTime": "17:00" },
+        { "dayOfWeek": "Friday", "startTime": "14:00", "endTime": "17:00" }
+      ]
+    },
+    {
+      "doctorLicense": "MED-4102",
+      "month": 11,
+      "days": [
+        { "dayOfWeek": "Monday", "startTime": "08:00", "endTime": "11:00" },
+        { "dayOfWeek": "Tuesday", "startTime": "08:00", "endTime": "11:00" }
+      ]
+    },
+    {
+      "doctorLicense": "MED-4208",
+      "month": 11,
+      "days": [
+        { "dayOfWeek": "Wednesday", "startTime": "09:00", "endTime": "12:00" },
+        { "dayOfWeek": "Friday", "startTime": "09:00", "endTime": "12:00" }
+      ]
+    },
+    {
+      "doctorLicense": "MED-4319",
+      "month": 11,
+      "days": [
+        { "dayOfWeek": "Monday", "startTime": "15:00", "endTime": "18:00" },
+        { "dayOfWeek": "Thursday", "startTime": "15:00", "endTime": "18:00" }
+      ]
+    },
+    {
+      "doctorLicense": "MED-4425",
+      "month": 11,
+      "days": [
+        { "dayOfWeek": "Tuesday", "startTime": "15:00", "endTime": "18:00" },
+        { "dayOfWeek": "Thursday", "startTime": "15:00", "endTime": "18:00" }
+      ]
+    },
+    {
+      "doctorLicense": "MED-4531",
+      "month": 11,
+      "days": [
+        { "dayOfWeek": "Monday", "startTime": "10:00", "endTime": "13:00" },
+        { "dayOfWeek": "Wednesday", "startTime": "10:00", "endTime": "13:00" }
+      ]
+    },
+    {
+      "doctorLicense": "MED-4642",
+      "month": 11,
+      "days": [
+        { "dayOfWeek": "Tuesday", "startTime": "08:30", "endTime": "11:30" },
+        { "dayOfWeek": "Friday", "startTime": "08:30", "endTime": "11:30" }
+      ]
+    },
+    {
+      "doctorLicense": "MED-4758",
+      "month": 11,
+      "days": [
+        { "dayOfWeek": "Wednesday", "startTime": "14:00", "endTime": "17:00" },
+        { "dayOfWeek": "Friday", "startTime": "14:00", "endTime": "17:00" }
+      ]
+    },
+    {
+      "doctorLicense": "MED-4863",
+      "month": 11,
+      "days": [
+        { "dayOfWeek": "Monday", "startTime": "11:00", "endTime": "13:00" },
+        { "dayOfWeek": "Thursday", "startTime": "11:00", "endTime": "13:00" }
+      ]
+    },
+    {
+      "doctorLicense": "MED-4974",
+      "month": 11,
+      "days": [
+        { "dayOfWeek": "Tuesday", "startTime": "09:00", "endTime": "11:00" },
+        { "dayOfWeek": "Wednesday", "startTime": "09:00", "endTime": "11:00" }
+      ]
+    },
+    {
+      "doctorLicense": "MED-5081",
+      "month": 11,
+      "days": [
+        { "dayOfWeek": "Thursday", "startTime": "10:00", "endTime": "13:00" },
+        { "dayOfWeek": "Friday", "startTime": "10:00", "endTime": "13:00" }
+      ]
+    },
+    {
+      "doctorLicense": "MED-5190",
+      "month": 11,
+      "days": [
+        { "dayOfWeek": "Monday", "startTime": "14:00", "endTime": "16:00" },
+        { "dayOfWeek": "Friday", "startTime": "14:00", "endTime": "16:00" }
+      ]
+    },
+    {
+      "doctorLicense": "MED-5295",
+      "month": 11,
+      "days": [
+        { "dayOfWeek": "Tuesday", "startTime": "11:00", "endTime": "13:00" },
+        { "dayOfWeek": "Thursday", "startTime": "11:00", "endTime": "13:00" }
+      ]
+    },
+    {
+      "doctorLicense": "MED-5312",
+      "month": 11,
+      "days": [
+        { "dayOfWeek": "Monday", "startTime": "09:00", "endTime": "11:00" },
+        { "dayOfWeek": "Wednesday", "startTime": "09:00", "endTime": "11:00" }
+      ]
+    },
+    {
+      "doctorLicense": "MED-5428",
+      "month": 11,
+      "days": [
+        { "dayOfWeek": "Tuesday", "startTime": "16:00", "endTime": "18:00" },
+        { "dayOfWeek": "Friday", "startTime": "16:00", "endTime": "18:00" }
+      ]
+    }
+  ],
+  "patients": [
+    {
+      "email": "johnathan.doe@test.com",
+      "dni": "40123456",
+      "name": "Johnathan Doe",
+      "phoneNumber": "3814123456"
+    },
+    {
+      "email": "camila.carabajal@test.com",
+      "dni": "39456123",
+      "name": "Camila Carabajal",
+      "phoneNumber": "3814234567"
+    },
+    {
+      "email": "iara.roman@test.com",
+      "dni": "41234567",
+      "name": "Iara Román",
+      "phoneNumber": "3814345678"
+    },
+    {
+      "email": "mariana.saavedra@test.com",
+      "dni": "38765432",
+      "name": "Mariana Saavedra",
+      "phoneNumber": "3814456789"
+    },
+    {
+      "email": "martin.lopez@test.com",
+      "dni": "35987654",
+      "name": "Martín López",
+      "phoneNumber": "3814567890"
+    }
+  ],
+  "appointments": [
+    {
+      "patientDni": "40123456",
+      "doctorLicense": "MED-4920",
+      "reason": "Control cardiológico anual y revisión de electrocardiograma."
+    },
+    {
+      "patientDni": "40123456",
+      "doctorLicense": "MED-8831",
+      "reason": "Seguimiento neurológico por episodios de migraña."
+    },
+    {
+      "patientDni": "40123456",
+      "doctorLicense": "MED-4102",
+      "reason": "Chequeo médico general y solicitud de análisis de laboratorio."
+    },
+    {
+      "patientDni": "40123456",
+      "doctorLicense": "MED-4208",
+      "reason": "Control de agudeza visual y renovación de receta de anteojos."
+    },
+    {
+      "patientDni": "39456123",
+      "doctorLicense": "MED-1192",
+      "reason": "Control ginecológico anual de rutina y estudios preventivos."
+    },
+    {
+      "patientDni": "39456123",
+      "doctorLicense": "MED-3310",
+      "reason": "Consulta dermatológica por control de lunares y cuidado solar."
+    },
+    {
+      "patientDni": "39456123",
+      "doctorLicense": "MED-4531",
+      "reason": "Evaluación endocrinológica y control de perfil tiroideo."
+    },
+    {
+      "patientDni": "39456123",
+      "doctorLicense": "MED-5428",
+      "reason": "Plan nutricional personalizado para actividad física regular."
+    },
+    {
+      "patientDni": "41234567",
+      "doctorLicense": "MED-2104",
+      "reason": "Control pediátrico de crecimiento y calendario de vacunación."
+    },
+    {
+      "patientDni": "41234567",
+      "doctorLicense": "MED-3415",
+      "reason": "Evaluación traumatológica por molestia en rodilla derecha."
+    },
+    {
+      "patientDni": "41234567",
+      "doctorLicense": "MED-4319",
+      "reason": "Consulta por congestión nasal persistente y control auditivo."
+    },
+    {
+      "patientDni": "41234567",
+      "doctorLicense": "MED-4642",
+      "reason": "Consulta gastroenterológica por acidez frecuente postprandial."
+    },
+    {
+      "patientDni": "38765432",
+      "doctorLicense": "MED-4425",
+      "reason": "Consulta inicial de seguimiento y manejo del estrés laboral."
+    },
+    {
+      "patientDni": "38765432",
+      "doctorLicense": "MED-4758",
+      "reason": "Control neumonológico y espirometría de seguimiento anual."
+    },
+    {
+      "patientDni": "38765432",
+      "doctorLicense": "MED-4863",
+      "reason": "Evaluación nefrológica preventiva y lectura de análisis renal."
+    },
+    {
+      "patientDni": "38765432",
+      "doctorLicense": "MED-5190",
+      "reason": "Control reumatológico por rigidez matutina en articulaciones."
+    },
+    {
+      "patientDni": "35987654",
+      "doctorLicense": "MED-4974",
+      "reason": "Consulta de control clínico oncológico y revisión de estudios."
+    },
+    {
+      "patientDni": "35987654",
+      "doctorLicense": "MED-5081",
+      "reason": "Control urológico anual preventivo y evaluación ecográfica."
+    },
+    {
+      "patientDni": "35987654",
+      "doctorLicense": "MED-5295",
+      "reason": "Control hematológico por resultado de hemograma completo."
+    },
+    {
+      "patientDni": "35987654",
+      "doctorLicense": "MED-5312",
+      "reason": "Asesoramiento infectológico para vacunación previa a viaje."
+    }
+  ]
+}

@@ -102,7 +102,8 @@ Todas las respuestas de error siguen el formato `{ "errorCode": "...", "message"
 | POST | `/api/appointments` | Paciente | Reserva un turno. Body: `{ doctorId, availabilitySlotId, patient: { dni }, reason }` |
 | GET | `/api/appointments/patient?dni` | Autenticado (un paciente solo puede consultar su propio DNI; Admin puede consultar cualquiera) | Turnos activos (reservados) de un paciente |
 | DELETE | `/api/appointments/{id}` | Paciente | Cancela un turno reservado |
-| GET | `/api/appointments/search?pageSize&pageIndex&patientDni&doctorId&specialtyId&date` | Admin | Búsqueda avanzada paginada, combinando filtros |
+| PATCH | `/api/appointments/{id}/status` | Admin | Actualiza el estado de un turno `BOOKED` a `ATTENDED` o `NO_SHOW`. Body: `{ "status": "ATTENDED" \| "NO_SHOW" }` (ver `docs/APPOINTMENT_STATUS_TRANSITIONS.md`) |
+| GET | `/api/appointments/search?pageSize&pageIndex&dni&doctorId&SpecialityId&date&status` | Admin | Búsqueda avanzada paginada, combinando filtros (incluye filtro opcional por `status`) |
 | GET | `/api/appointments?date=YYYY-MM-DD` | Admin | Turnos agendados para un día puntual |
 
 ### Salud

@@ -29,7 +29,7 @@ public class DoctorService : IDoctorService
                     && (string.IsNullOrWhiteSpace(name) || d.Name.Contains(name)), x => x.Name, nameof(Doctor.Speciality));
 
         return doctors.Map(d => new DoctorModel.Response(d.Id, d.Name, d.LicenseNumber,
-            new DoctorModel.SpecialityDto(d.Speciality?.Id, d.Speciality?.Name)));
+            new DoctorModel.SpecialityDto(d.Speciality?.Id, d.Speciality?.Name), d.CreatedAt));
     }
 
     public async Task<DoctorModel.Response> Create(DoctorModel.Request request)
@@ -47,7 +47,7 @@ public class DoctorService : IDoctorService
         await _persistence.Add(doctor);
 
         return new DoctorModel.Response(doctor.Id, doctor.Name, doctor.LicenseNumber,
-            new DoctorModel.SpecialityDto(speciality.Id, speciality.Name));
+            new DoctorModel.SpecialityDto(speciality.Id, speciality.Name), doctor.CreatedAt);
     }
 
     public async Task<DoctorModel.Response> Update(Guid id, DoctorModel.Request request)
@@ -68,7 +68,7 @@ public class DoctorService : IDoctorService
         await _persistence.Update(doctor);
 
         return new DoctorModel.Response(doctor.Id, doctor.Name, doctor.LicenseNumber,
-            new DoctorModel.SpecialityDto(speciality.Id, speciality.Name));
+            new DoctorModel.SpecialityDto(speciality.Id, speciality.Name), doctor.CreatedAt);
     }
 
     public async Task Delete(Guid id)
@@ -86,6 +86,6 @@ public class DoctorService : IDoctorService
             ?? throw new EntityNotFoundException(nameof(Doctor));
 
         return new DoctorModel.Response(doctor.Id, doctor.Name, doctor.LicenseNumber,
-            new DoctorModel.SpecialityDto(doctor.Speciality?.Id, doctor.Speciality?.Name));
+            new DoctorModel.SpecialityDto(doctor.Speciality?.Id, doctor.Speciality?.Name), doctor.CreatedAt);
     }
 }

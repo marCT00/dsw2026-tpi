@@ -1,4 +1,4 @@
-﻿using Dsw2026Tpi.Domain.Entities;
+using Dsw2026Tpi.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -30,11 +30,12 @@ public class DateConfiguration : IEntityTypeConfiguration<Date>
             .OnDelete(DeleteBehavior.Restrict);
 
         builder.HasOne(d => d.Turn)
-            .WithOne(t => t.Date)
-            .HasForeignKey<Date>(d => d.TurnId)
-            .OnDelete(DeleteBehavior.Restrict);
+            .WithMany(t => t.Appointments)
+            .HasForeignKey(d => d.TurnId)
+            .OnDelete(DeleteBehavior.SetNull);
 
         builder.HasIndex(d => d.TurnId)
-            .IsUnique();
+            .IsUnique()
+            .HasFilter("[TurnId] IS NOT NULL AND [Status] <> 'CANCELLED'");
     }
 }

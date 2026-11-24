@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!-- 
     Microsoft ResX Schema 
@@ -194,6 +194,12 @@
   </data>
   <data name="APPOINTMENT_ALREADY_CANCELLED" xml:space="preserve">
     <value>El turno ya fue cancelado o atendido</value>
+  </data>
+  <data name="APPOINTMENT_INVALID_STATUS_TRANSITION" xml:space="preserve">
+    <value>Solo se permite actualizar el estado del turno a ATTENDED o NO_SHOW</value>
+  </data>
+  <data name="APPOINTMENT_STATUS_CHANGE_NOT_ALLOWED" xml:space="preserve">
+    <value>Solo se puede cambiar el estado de un turno que se encuentre en estado BOOKED</value>
   </data>
   <data name="AVAILABILITY_INVALID_DAY" xml:space="preserve">
     <value>El día ingresado no es válido</value>

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -15,8 +15,7 @@ namespace Dsw2026Tpi.Domain.Entities
         public Guid? AvailabilityId { get; set; }
         public Availability? Availability { get; private set; }
 
-        public Guid? DateId { get; private set; }
-        public Date? Date { get; private set; }
+        public ICollection<Date> Appointments { get; private set; } = new List<Date>();
 
         #region Constructor for EF
 #pragma warning disable CS8618
@@ -42,7 +41,11 @@ namespace Dsw2026Tpi.Domain.Entities
 
         public void Reserve(Date date)
         {
-            Date = date;
+            if (!Appointments.Contains(date))
+            {
+                Appointments.Add(date);
+            }
+
             State = TurnState.BOOKED;
         }
 
@@ -53,7 +56,6 @@ namespace Dsw2026Tpi.Domain.Entities
 
         public void Release()
         {
-            Date = null;
             State = TurnState.AVAILABLE;
         }
     }

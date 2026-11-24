@@ -45,9 +45,30 @@ public class AppointmentController : ControllerBase
     [HttpGet("search")]
     [Authorize(Policy = Policies.AdminPolicy)]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public async Task<IActionResult> Search([FromQuery] int pageSize = 10, [FromQuery] int pageIndex = 1,[FromQuery] string? dni = null, [FromQuery] Guid? doctorId = null,[FromQuery] Guid? SpecialityId = null,[FromQuery] string? date = null)
+    public async Task<IActionResult> Search(
+        [FromQuery] int pageSize = 10,
+        [FromQuery] int pageIndex = 1,
+        [FromQuery] string? dni = null,
+        [FromQuery] Guid? doctorId = null,
+        [FromQuery] Guid? SpecialityId = null,
+        [FromQuery] string? date = null,
+        [FromQuery] DateState? status = null)
     {
-        var result = await _appointmentService.Search(pageSize, pageIndex, dni, doctorId, SpecialityId, date);
+        var result = await _appointmentService.Search(pageSize, pageIndex, dni, doctorId, SpecialityId, date, status);
+        return Ok(result);
+    }
+
+    [HttpPatch("{id}/status")]
+    [Authorize(Policy = Policies.AdminPolicy)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status409Conflict)]
+    public async Task<IActionResult> UpdateStatus(
+        [FromRoute] Guid id,
+        [FromBody] AppointmentModel.UpdateStatusRequest request)
+    {
+        var result = await _appointmentService.UpdateStatus(id, request);
         return Ok(result);
     }
 

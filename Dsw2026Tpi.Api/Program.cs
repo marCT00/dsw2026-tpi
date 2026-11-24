@@ -39,6 +39,8 @@ public class Program
                 });
             builder.Services.AddHealthChecks();
             builder.Services.AddHostedService<AdminSeederHostedService>();
+            builder.Services.AddHostedService<SeedDataHostedService>();
+            builder.Services.AddHostedService<AppointmentCompletionHostedService>();
             var app = builder.Build();
 
             app.UseSerilogRequestLogging();

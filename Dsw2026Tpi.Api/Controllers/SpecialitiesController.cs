@@ -1,4 +1,4 @@
-﻿using Dsw2026Tpi.Application.Dtos;
+using Dsw2026Tpi.Application.Dtos;
 using Dsw2026Tpi.Application.Interfaces;
 using Dsw2026Tpi.CrossCutting.Identity;
 using Microsoft.AspNetCore.Authorization;
@@ -19,9 +19,9 @@ public class SpecialitiesController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetAll([FromQuery] int pageSize = 10, [FromQuery] int pageIndex = 1, [FromQuery] string? name = null)
+    public async Task<IActionResult> GetAll([FromQuery] int pageSize = 10, [FromQuery] int pageIndex = 1, [FromQuery] string? name = null, [FromQuery] bool? isActive = null)
     {
-        var result = await _specialityService.GetAll(pageSize, pageIndex, name);
+        var result = await _specialityService.GetAll(pageSize, pageIndex, name, isActive);
         return Ok(result);
     }
 

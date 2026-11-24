@@ -87,6 +87,11 @@ public class PersistenceEf: IPersistence
         return new Pagination<T>(pageSize, currentPage, total, data);
     }
 
+    public async Task<int> Count<T>(Expression<Func<T, bool>> predicate) where T : EntityBase
+    {
+        return await _context.Set<T>().CountAsync(predicate);
+    }
+
     private static IQueryable<T> Include<T>(IQueryable<T> query, string[] includes) where T : EntityBase
     {
         var includedQuery = query;

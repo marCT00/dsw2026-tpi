@@ -1,4 +1,4 @@
-﻿using Dsw2026Tpi.Domain.Entities;
+using Dsw2026Tpi.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -35,8 +35,5 @@ public class TurnConfiguration : IEntityTypeConfiguration<Turn>
             .WithMany(a => a.Turns)
             .HasForeignKey(t => t.AvailabilityId)
             .OnDelete(DeleteBehavior.Restrict);
-
-
-        builder.Ignore(t => t.DateId);
     }
 }

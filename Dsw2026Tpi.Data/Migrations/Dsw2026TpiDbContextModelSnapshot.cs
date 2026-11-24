@@ -101,7 +101,7 @@ namespace Dsw2026Tpi.Data.Migrations
 
                     b.HasIndex("TurnId")
                         .IsUnique()
-                        .HasFilter("[TurnId] IS NOT NULL");
+                        .HasFilter("[TurnId] IS NOT NULL AND [Status] <> 'CANCELLED'");
 
                     b.ToTable("Appointments", (string)null);
                 });
@@ -281,9 +281,9 @@ namespace Dsw2026Tpi.Data.Migrations
                         .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("Dsw2026Tpi.Domain.Entities.Turn", "Turn")
-                        .WithOne("Date")
-                        .HasForeignKey("Dsw2026Tpi.Domain.Entities.Date", "TurnId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .WithMany("Appointments")
+                        .HasForeignKey("TurnId")
+                        .OnDelete(DeleteBehavior.SetNull);
 
                     b.Navigation("Patient");
 
@@ -332,7 +332,7 @@ namespace Dsw2026Tpi.Data.Migrations
 
             modelBuilder.Entity("Dsw2026Tpi.Domain.Entities.Turn", b =>
                 {
-                    b.Navigation("Date");
+                    b.Navigation("Appointments");
                 });
 #pragma warning restore 612, 618
         }

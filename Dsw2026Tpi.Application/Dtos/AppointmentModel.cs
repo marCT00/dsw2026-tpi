@@ -6,6 +6,7 @@ public static class AppointmentModel
 {
     public record Request(Guid DoctorId, Guid AvailabilitySlotId, PatientRequest Patient, string Reason);
     public record PatientRequest(string Dni);
+    public record UpdateStatusRequest(DateState Status);
 
     public record Response(
         Guid Id,
@@ -17,7 +18,8 @@ public static class AppointmentModel
         Guid PatientId,
         string? PatientDni,
         TimeSpan StartTime,
-        TimeSpan EndTime);
+        TimeSpan EndTime,
+        DoctorSearchResponse? Doctor = null);
 
     public record SearchResponse(
         Guid Id,

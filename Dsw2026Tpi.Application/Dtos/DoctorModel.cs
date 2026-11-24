@@ -1,8 +1,8 @@
-﻿namespace Dsw2026Tpi.Application.Dtos;
+namespace Dsw2026Tpi.Application.Dtos;
 
 public record DoctorModel
 {
     public record Request(string Name, string LicenseNumber, Guid SpecialityId);
-    public record Response(Guid Id, string Name, string LicenseNumber, SpecialityDto? Speciality);
+    public record Response(Guid Id, string Name, string LicenseNumber, SpecialityDto? Speciality, DateTime CreatedAt);
     public record SpecialityDto(Guid? Id, string? Name);
 }
